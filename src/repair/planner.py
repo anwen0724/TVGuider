@@ -21,7 +21,6 @@ class RepairPlan:
 @dataclass
 class RepairPlannerConfig:
     max_strategies: int = 3
-    allow_latency_increase: bool = False
     prefer_local_changes: bool = True
 
 
@@ -88,8 +87,6 @@ class RepairPlanner:
 
     def _preconditions_ok(self, strategy: RepairStrategy, features: Any) -> bool:
         pres = strategy.preconditions or []
-        if not self.config.allow_latency_increase and "latency_increase_allowed" in pres:
-            return False
         if "has_high_fanout_signal" in pres:
             fo = self._to_int(self._f(features, "max_fanout_count", 0), 0)
             if fo < 16:
@@ -171,10 +168,6 @@ class RepairPlanner:
         risk_map = {"low": 0.2, "medium": 0.6, "high": 1.0}
         risk = risk_map.get((strategy.risk_level or "medium").lower(), 0.6)
         score -= 0.5 * risk
-        if not self.config.allow_latency_increase and "latency_increase_allowed" in (
-            strategy.preconditions or []
-        ):
-            score -= 0.8
         if self.config.prefer_local_changes:
             if strategy.change_scope in ("local_expr", "local", "single_module"):
                 score += 0.2

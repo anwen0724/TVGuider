@@ -6,7 +6,10 @@ from rag import build_knowledge_base, search_knowledge_base
 from repair.service import repair_from_tvir
 
 
-def test_pipeline_connects_diagnosis_real_retrieval_and_full_rtl(tmp_path, source, config, backend):
+@pytest.mark.parametrize("violation_type", ["setup", "hold"])
+def test_pipeline_connects_diagnosis_real_retrieval_and_full_rtl(
+    tmp_path, source, config, backend, violation_type
+):
     kb = tmp_path / "kb"
     built = build_knowledge_base(source, kb, config, backend=backend)
     hit = search_knowledge_base(kb, "setup", mode="bm25").results[0]
@@ -14,7 +17,7 @@ def test_pipeline_connects_diagnosis_real_retrieval_and_full_rtl(tmp_path, sourc
         "module design(input clk, input a, output reg q); always @(posedge clk) q <= a; endmodule"
     )
     tvir = {
-        "context": {"violation_type": "setup", "period_ns": 2, "slack_ns": -0.5},
+        "context": {"violation_type": violation_type, "period_ns": 2, "slack_ns": -0.5},
         "dataflow_path": [],
         "rtl_snippet": ["q <= a;"],
     }
@@ -59,16 +62,4 @@ def test_pipeline_connects_diagnosis_real_retrieval_and_full_rtl(tmp_path, sourc
     assert result["validation_status"] == "not_run"
     assert hit.chunk.text in model.prompts[1]
 
-
-def test_pipeline_rejects_hold_before_model_call():
-    class Model:
-        def generate(self, prompt):
-            pytest.fail("Out-of-scope input must not trigger a model call")
-
-    with pytest.raises(ValueError, match="setup"):
-        repair_from_tvir(
-            {"context": {"violation_type": "hold"}},
-            "module m; endmodule",
-            kb_dir="unused",
-            llm_client=Model(),
-        )
+    assert result["responses"]["repair"]["content"] == result["repair"]["raw_output"]

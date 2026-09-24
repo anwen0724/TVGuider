@@ -11,7 +11,7 @@ from .scoring import (
     RootCauseScoringConfig,
     score_all_root_causes,
 )
-from .validation import validate_setup_tvir
+from .validation import validate_tvir
 
 
 @dataclass
@@ -65,7 +65,7 @@ class RootCauseClassifier:
         self.config = config or RootCauseClassifierConfig()
 
     def analyze(self, tvir: dict[str, Any]) -> RootCauseResult:
-        validate_setup_tvir(tvir)
+        validate_tvir(tvir)
         features = extract_diagnostic_features(tvir, config=self.config.feature_cfg)
         candidates = score_all_root_causes(features, cfg=self.config.scoring_cfg)
         root_cause_labels = self._select_root_cause_labels(candidates)

@@ -7,7 +7,7 @@ from llm_clients.base import LLMClient
 from prompts import build_root_cause_prompt
 
 from .classifier import RootCauseLabels, RootCauseResult
-from .validation import validate_setup_tvir
+from .validation import validate_tvir
 
 
 @dataclass
@@ -37,6 +37,8 @@ class RootCauseLLMOutput:
     final_root_cause: RootCauseLabels
     explanation: RootCauseExplanation
     selection_rationale: SelectionRationale
+    parse_status: str = "parsed"
+    parse_error: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -46,6 +48,8 @@ class RootCauseLLMOutput:
             },
             "explanation": self.explanation.to_dict(),
             "selection_rationale": self.selection_rationale.to_dict(),
+            "parse_status": self.parse_status,
+            "parse_error": self.parse_error,
         }
 
 
@@ -72,7 +76,7 @@ class RootCauseExplainer:
     def explain_and_adjust(
         self, tvir: dict[str, Any], rule_result: RootCauseResult
     ) -> RootCauseLLMOutput:
-        validate_setup_tvir(tvir)
+        validate_tvir(tvir)
         rule_primary = str(rule_result.root_cause.primary)
         rule_secondary = [str(x) for x in rule_result.root_cause.secondary]
         llm_context = self._build_llm_context(tvir, rule_result)
@@ -83,7 +87,7 @@ class RootCauseExplainer:
         if data is None:
             final_labels = RootCauseLabels(primary=rule_primary, secondary=rule_secondary)
             explanation = RootCauseExplanation(
-                text="The LLM response could not be parsed as valid JSON, so the original rule-based root-old_cause labels are kept."
+                text="The LLM response could not be parsed as valid JSON, so the original rule-based root-cause labels are kept."
                 if not (self.config.language or "en").lower().startswith("zh")
                 else "LLM 返回结果无法解析为合法 JSON，因此保留规则层的根因标签。"
             )
@@ -100,6 +104,8 @@ class RootCauseExplainer:
                 final_root_cause=final_labels,
                 explanation=explanation,
                 selection_rationale=rationale,
+                parse_status="failed",
+                parse_error="invalid_json_object",
             )
         final_rc = data.get("final_root_cause") or {}
         if not isinstance(final_rc, dict):

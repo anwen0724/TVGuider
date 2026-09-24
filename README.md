@@ -76,7 +76,7 @@ repair_prompt = build_repair_prompt(repair_context, allow_custom_strategy=False)
 
 ## Setup 根因分析与修复
 
-流程为：TVIR → 规则特征与评分 → LLM 根因解释 → 英文查询 → RAG 混合检索 → LLM 修复候选。默认 `hybrid`、`top_k=5`，五条知识片段与最多三条旧规则候选策略分别传入模型。规则保留 S1 组合路径、S2 扇出、S3 算术流水线和 S4 跨层次类别；hold 与跨时钟输入会被拒绝。
+流程为：TVIR → 规则特征与评分 → LLM 根因解释 → 英文查询 → RAG 混合检索 → LLM 修复候选。默认 `hybrid`、`top_k=5`，五条知识片段与最多三条旧规则候选策略分别传入模型。规则保留 S1 组合路径、S2 扇出、S3 算术流水线和 S4 跨层次类别。不按违例类型或时钟名称拦截输入；未新增 hold 或 CDC 专用规则与策略。
 
 已有 Conda `TVGuider` 环境已安装 LLM 依赖；新环境执行 `python -m pip install -e ".[llm]"`。在项目根目录 `.env` 填写 `DEEPSEEK_API_KEY` 与 `DEEPSEEK_BASE_URL`，模板见 `.env.example`。运行示例（将案例路径替换为实际文件）：
 
@@ -84,23 +84,28 @@ repair_prompt = build_repair_prompt(repair_context, allow_custom_strategy=False)
 conda run -n TVGuider python -X utf8 -m repair --rtl path/to/design.v --report path/to/timing.txt --kb artifacts/rag/kb --output artifacts/repair/case-001 --max-tokens 32768
 ```
 
-CLI 处理报告中的第一条负 slack 路径；若该路径不是 setup 或属于跨时钟场景，则明确失败。也可以用 `--tvir path/to/tvir.json` 替代 `--report`，输入单条 TVIR 对象。`--design-context path/to/design.xdc` 可附加约束文本；模型默认跟随 `DeepSeekClientConfig`，也可通过 `--model` 显式指定。
+CLI 处理报告中的第一条负 slack 路径。也可以用 `--tvir path/to/tvir.json` 替代 `--report`，输入单条 TVIR 对象。`--design-context path/to/design.xdc` 可附加约束文本；模型默认跟随 `DeepSeekClientConfig`，也可通过 `--model` 显式指定。
 
-生成预算同样默认跟随客户端配置，可用 `--max-tokens` 覆盖。本机真实 `deepseek-flash` 修复请求在 8192 tokens 时发生 `finish_reason=length` 且正文为空，因此示例显式给出 32768；实际用量与费用由模型响应决定，不能把截断的输出作为修复结果。
+生成预算默认跟随客户端配置，可用 `--max-tokens` 覆盖单次调用预算。DeepSeek、Qwen 默认 32768；GPT-4o 默认 16384（[官方输出上限](https://developers.openai.com/api/docs/models/gpt-4o)）。旧 Claude 配置的模型已在 [Anthropic 下线记录](https://platform.claude.com/docs/en/about-claude/model-deprecations) 中停用，Together 的 CodeLlama 70B 也在 [下线记录](https://docs.together.ai/docs/deprecations) 中；这两个遗留客户端的预算分别保留 8192、1200，没有擅自更换模型。RAG 的 1024-token 分块配置不变。
 
-输出目录包含 `repaired.v` 和 `result.json`，后者保存规则结果、最终根因、检索 query/build ID/片段与来源、约束和生成结果。现有同名输出不会覆盖，原始 RTL 不修改。默认不允许增加拍数；确实允许时传 `--allow-latency-increase`。此配置会过滤相关规则策略，并检查模型声明的 `latency_change_cycles`，不构成功能等价或实际延迟验证。
+`--output` 为必填目录参数，没有默认目录。每次模型返回后、业务解析之前，立即写入 `root_cause_response.json` 或 `repair_response.json`，保存正文、返回模型、结束原因、token 用量及完整 SDK 响应。SDK 未提供的字段保存为 null。只实现 `generate(prompt)` 的第三方客户端仍可使用，记录其返回文本，无法取得的元数据为 null。
+
+`result.json` 保存规则结果、整理后的根因、检索证据、模型响应和修复解析结果。修复返回的 JSON 对象按原样保留，不删除或替换模型字段；缺少字段、引用异常、声明增加拍数都不会阻止保存。空正文、截断内容和非法 JSON 记录 `parse_status="failed"` 与 `parse_error`，原始响应照常保留。根因解析失败仍沿用规则回退，并记录解析状态。`validation_status="not_run"` 是程序层状态，和模型自行声明的状态分开。
+
+能从 JSON 的 `repaired_rtl`、Verilog 代码围栏或以 module/常用编译指令起始的纯 RTL 文本中提取代码时，另存 `repaired.v`；无可提取代码时不生成此文件。提取不检查语法、功能或时序。后续检索或处理失败时，先前已收到的响应文件仍然保留。已有同名文件不覆盖，原始 RTL 不修改。
 
 ```python
 from repair import RepairConstraints, repair_from_tvir
 
 result = repair_from_tvir(
     tvir, original_rtl, kb_dir="artifacts/rag/kb", llm_client=client,
-    constraints=RepairConstraints(allow_latency_increase=False),
+    constraints=RepairConstraints(design_context=xdc_text),
 )
-repaired_rtl = result["repair"]["suggestion"]["repaired_rtl"]
+raw_response = result["responses"]["repair"]
+repaired_rtl = result["repair"]["repaired_rtl"]  # None when no RTL is extractable
 ```
 
-生成结果始终标记 `validation_status="not_run"`，需要后续仿真、综合和 STA。缺失正文、非法知识引用和不符合声明延迟约束的模型输出会失败，不会退回普通建议并假装生成成功。接口与测试范围见 [Setup 接入记录](C:/Users/anwen/Desktop/tv-guider/docs/notes/setup-reuse-validation.md)。
+Python API 默认只返回内存中的字典，不创建结果目录。需要边调用边保存时，可传入 `on_response(stage, response)` 回调；CLI 使用此回调立即落盘。根因分析与修复生成各调用一次模型，接口与拍数没有新增的强制保持条件。功能、等价性、实际延迟和 STA 留给后续验证。修改记录见 [输出保留调整](C:/Users/anwen/Desktop/tv-guider/docs/notes/output-preservation.md)。
 
 ## 验证与评估
 
@@ -115,6 +120,6 @@ conda run -n TVGuider python -m rag.evaluate --kb artifacts/rag/kb --dataset eva
 
 默认测试不运行模型组；显式 `-m model` 会实际加载本地模型，缺模型会失败。评估输出 `report.json`（逐题 Top-5 和配置）及 `report.md`；验收未达标退出码为 2，输入或运行错误为 1。
 
-TVIR 与 LLM 客户端仍保留旧代码的 lint 问题，因此上面的全项目 `ruff check` 当前未通过。本次范围可运行 `ruff check src/root_cause src/repair src/prompts src/rag tests scripts`；旧 TVIR 的检查结果见其迁移验证记录。
+TVIR 仍保留旧代码的 lint 问题，因此上面的全项目 `ruff check` 当前未通过。本次范围可运行 `ruff check src/root_cause src/repair src/prompts src/llm_clients src/rag tests scripts`；旧 TVIR 的检查结果见其迁移验证记录。
 
 开发集 8 问与验收集 20 问分开保存，manifest 固定其用途及 SHA-256。验收要求 hybrid 总体至少 16/20，setup 和 hold 分别至少 8/10。不能使用验收集调参后仍将其作为独立验收；资料变更后的评估需重新审阅标签并显式更新冻结记录。

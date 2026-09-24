@@ -3,7 +3,7 @@ import json
 import pytest
 
 from rag import build_knowledge_base, search_knowledge_base
-from repair.contracts import RepairConstraints, RepairOutputError
+from repair.contracts import RepairConstraints
 from repair.generator import RepairSuggestionGenerator
 from repair.planner import RepairPlanner
 
@@ -61,16 +61,17 @@ def test_full_rtl_and_retrieved_evidence_reach_the_model(generation_case):
     assert payload["original_rtl"] == RTL
     assert payload["knowledge"]["build_id"] == retrieval.build_id
     assert payload["knowledge"]["chunks"][0]["sources"] == ["https://example.com/sta"]
-    assert payload["constraints"]["allow_latency_increase"] is False
+    assert payload["constraints"] == {"design_context": "create_clock -period 2 clk"}
     assert result.suggestion["repaired_rtl"] == RTL
-    assert result.suggestion["validation_status"] == "not_run"
+    assert result.validation_status == "not_run"
 
 
-def test_model_cannot_replace_program_owned_diagnosis_or_candidates(generation_case):
+def test_model_fields_are_preserved_separately_from_verification_status(generation_case):
     tvir, final, plan, retrieval, response = generation_case
     response["summary"] = {"final_primary": "fabricated"}
     response["candidate_strategies"] = [{"id": "fabricated"}]
     response["validation_status"] = "passed"
+    response["chosen_strategies"] = [{"id": "outside-library", "source": "library"}]
     result = RepairSuggestionGenerator(Client(response)).generate(
         tvir=tvir,
         module2_output=final,
@@ -78,11 +79,8 @@ def test_model_cannot_replace_program_owned_diagnosis_or_candidates(generation_c
         original_rtl=RTL,
         retrieval=retrieval,
     )
-    assert result.suggestion["summary"]["final_primary"] == final["final_root_cause"]["primary"]
-    assert {s["id"] for s in result.suggestion["candidate_strategies"]} == {
-        s.id for s in plan.candidate_strategies
-    }
-    assert result.suggestion["validation_status"] == "not_run"
+    assert result.suggestion == response
+    assert result.validation_status == "not_run"
 
 
 @pytest.mark.parametrize(
@@ -97,7 +95,7 @@ def test_model_cannot_replace_program_owned_diagnosis_or_candidates(generation_c
         "not_object",
     ],
 )
-def test_invalid_repair_is_not_returned_as_success(generation_case, change):
+def test_incomplete_or_unverified_output_is_returned_without_rejection(generation_case, change):
     tvir, final, plan, retrieval, response = generation_case
     if change == "missing_rtl":
         response.pop("repaired_rtl")
@@ -113,11 +111,45 @@ def test_invalid_repair_is_not_returned_as_success(generation_case, change):
         response["change_summary"] = []
     else:
         response = []
-    with pytest.raises(RepairOutputError):
-        RepairSuggestionGenerator(Client(response)).generate(
-            tvir=tvir,
-            module2_output=final,
-            repair_plan=plan,
-            original_rtl=RTL,
-            retrieval=retrieval,
-        )
+    result = RepairSuggestionGenerator(Client(response)).generate(
+        tvir=tvir,
+        module2_output=final,
+        repair_plan=plan,
+        original_rtl=RTL,
+        retrieval=retrieval,
+    )
+    assert result.raw_output == json.dumps(response)
+    assert result.validation_status == "not_run"
+    if change == "not_object":
+        assert result.parse_status == "failed"
+        assert result.parse_error
+    else:
+        assert result.suggestion == response
+        assert result.parse_status == "parsed"
+
+
+@pytest.mark.parametrize(
+    "raw",
+    [
+        "```verilog\nmodule m; endmodule\n```",
+        "module m; endmodule",
+        '{"repaired_rtl":"```verilog\nmodule m; endmodule\n```"}'.replace("\n", "\\n"),
+    ],
+)
+def test_rtl_extraction_does_not_require_valid_suggestion_fields(generation_case, raw):
+    tvir, final, plan, retrieval, _ = generation_case
+
+    class Model:
+        def generate(self, prompt):
+            return raw
+
+    result = RepairSuggestionGenerator(Model()).generate(
+        tvir=tvir,
+        module2_output=final,
+        repair_plan=plan,
+        original_rtl=RTL,
+        retrieval=retrieval,
+    )
+    assert result.raw_output == raw
+    assert result.repaired_rtl.strip() == "module m; endmodule"
+    assert result.validation_status == "not_run"

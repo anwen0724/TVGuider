@@ -6,9 +6,9 @@ from typing import Any
 
 from llm_clients.base import LLMClient
 from prompts import build_repair_prompt
-from root_cause.validation import validate_setup_tvir
+from root_cause.validation import validate_tvir
 
-from .contracts import RepairConstraints, RepairOutputError, validate_repair_output
+from .contracts import RepairConstraints
 from .knowledge import retrieval_context
 from .planner import RepairPlan
 
@@ -19,6 +19,10 @@ class RepairSuggestionResult:
     text: str
     strategies_used: list[str]
     raw_output: str | None = None
+    parse_status: str = "parsed"
+    parse_error: str | None = None
+    validation_status: str = "not_run"
+    repaired_rtl: str | None = None
 
 
 @dataclass
@@ -44,7 +48,7 @@ class RepairSuggestionGenerator:
         retrieval,
         constraints=None,
     ) -> RepairSuggestionResult:
-        validate_setup_tvir(tvir)
+        validate_tvir(tvir)
         if not isinstance(original_rtl, str) or not original_rtl.strip():
             raise ValueError("Original RTL must be nonempty")
         constraints = constraints or RepairConstraints()
@@ -59,60 +63,42 @@ class RepairSuggestionGenerator:
             language=self.config.language,
             allow_custom_strategy=self.config.allow_custom_strategy,
         )
-        raw = (self.llm_client.generate(prompt) or "").strip()
-        candidate_strategies = list(repair_plan.selected_strategies or [])
-        allowed_ids = {s.id for s in candidate_strategies}
+        raw = self.llm_client.generate(prompt) or ""
         parsed, parse_err = self._parse_llm_json(raw)
-        summary = self._build_summary(tvir=tvir, module2_output=module2_output)
-        suggestion: dict[str, Any] = {
-            "summary": summary,
-            "candidate_strategies": [
-                {
-                    "id": s.id,
-                    "title": s.title,
-                    "root_cause_label": s.root_cause_label,
-                    "timing_gain": s.timing_gain,
-                    "risk_level": s.risk_level,
-                    "change_scope": s.change_scope,
-                    "description": s.description,
-                    "notes": list(s.notes),
-                }
-                for s in candidate_strategies
-            ],
-        }
-        if parsed is not None:
-            validate_repair_output(
-                parsed, {hit.chunk.chunk_id for hit in retrieval.results}, constraints
-            )
-        if parsed is None:
-            raise RepairOutputError(f"Invalid model repair JSON: {parse_err}")
-        else:
-            fields = {
-                "chosen_strategies",
-                "edit_locations",
-                "engineer_advice",
-                "code_hint",
-                "risks",
-                "repaired_rtl",
-                "change_summary",
-                "knowledge_used",
-                "latency_change_cycles",
-            }
-            suggestion.update({key: value for key, value in parsed.items() if key in fields})
-            val_errs = self._validate_and_fix_suggestion(
-                suggestion=suggestion,
-                tvir=tvir,
-                allowed_strategy_ids=allowed_ids,
-                allow_custom=self.config.allow_custom_strategy,
-            )
-            if val_errs:
-                suggestion["_validation_error"] = val_errs
-        suggestion["validation_status"] = "not_run"
-        strategies_used = self._extract_strategies_used(suggestion)
-        text_out = self._render_for_humans(suggestion=suggestion, tvir=tvir)
-        return RepairSuggestionResult(
-            suggestion=suggestion, text=text_out, strategies_used=strategies_used, raw_output=raw
+        suggestion = parsed if parsed is not None else {}
+        chosen = suggestion.get("chosen_strategies")
+        strategies = (
+            [str(item["id"]) for item in chosen if isinstance(item, dict) and item.get("id")]
+            if isinstance(chosen, list)
+            else []
         )
+        return RepairSuggestionResult(
+            suggestion=suggestion,
+            text=raw,
+            strategies_used=strategies,
+            raw_output=raw,
+            parse_status="parsed" if parsed is not None else "failed",
+            parse_error=parse_err or None,
+            repaired_rtl=self._extract_rtl(suggestion, raw),
+        )
+
+    def _extract_rtl(self, suggestion, raw):
+        rtl = suggestion.get("repaired_rtl")
+        if isinstance(rtl, str) and rtl.strip():
+            fenced = re.fullmatch(
+                r"\s*```(?:verilog|systemverilog|sv)?\s*\n(.*?)\n```\s*",
+                rtl,
+                re.DOTALL | re.IGNORECASE,
+            )
+            return fenced.group(1) if fenced else rtl
+        blocks = re.findall(
+            r"```(?:verilog|systemverilog|sv)\s*\n(.*?)\n```", raw, re.DOTALL | re.IGNORECASE
+        )
+        if blocks:
+            return "\n".join(blocks)
+        if re.match(r"\s*(?:module\s|`timescale\b|`include\b|`default_nettype\b)", raw):
+            return raw
+        return None
 
     def _build_llm_context_for_repair(
         self, *, tvir: dict[str, Any], module2_output: dict[str, Any], repair_plan: RepairPlan
@@ -235,171 +221,6 @@ class RepairSuggestionGenerator:
                     if depth == 0:
                         return s[start : i + 1].strip()
             return None
-
-    def _validate_and_fix_suggestion(
-        self,
-        *,
-        suggestion: dict[str, Any],
-        tvir: dict[str, Any],
-        allowed_strategy_ids: set,
-        allow_custom: bool,
-    ) -> list[str]:
-        errs: list[str] = []
-        required = ["chosen_strategies", "edit_locations", "engineer_advice", "code_hint", "risks"]
-        for k in required:
-            if k not in suggestion:
-                errs.append(f"missing_field:{k}")
-        chosen = suggestion.get("chosen_strategies") or []
-        if not isinstance(chosen, list):
-            errs.append("chosen_strategies_not_list")
-            chosen = []
-        fixed_chosen = []
-        for item in chosen:
-            if not isinstance(item, dict):
-                continue
-            src = str(item.get("source") or "library").strip().lower()
-            sid = item.get("id")
-            if src == "library":
-                if sid not in allowed_strategy_ids:
-                    errs.append(f"library_strategy_not_allowed:{sid}")
-                    continue
-            elif src == "custom":
-                if not allow_custom:
-                    errs.append("custom_not_allowed")
-                    continue
-                if not item.get("title"):
-                    errs.append(f"custom_missing_title:{sid}")
-                    item["title"] = "CUSTOM_STRATEGY"
-            else:
-                errs.append(f"bad_source:{src}")
-                continue
-            fixed_chosen.append(item)
-        suggestion["chosen_strategies"] = fixed_chosen
-        dflow = tvir.get("dataflow_path") or []
-        snippet = tvir.get("rtl_snippet") or []
-        locs = suggestion.get("edit_locations") or []
-        if not isinstance(locs, list):
-            errs.append("edit_locations_not_list")
-            locs = []
-        fixed_locs = []
-        for loc in locs:
-            if not isinstance(loc, dict):
-                continue
-            lt = loc.get("location_type")
-            ref = loc.get("ref") or {}
-            if lt == "dataflow_node":
-                idx = ref.get("index")
-                if not isinstance(idx, int) or idx < 0 or idx >= len(dflow):
-                    errs.append(f"bad_dataflow_index:{idx}")
-                    continue
-            elif lt == "rtl_snippet_line_range":
-                st, ed = (ref.get("start"), ref.get("end"))
-                if not (
-                    isinstance(st, int) and isinstance(ed, int) and (0 <= st <= ed < len(snippet))
-                ):
-                    errs.append(f"bad_snippet_range:{st}-{ed}")
-                    continue
-            else:
-                errs.append(f"bad_location_type:{lt}")
-                continue
-            fixed_locs.append(loc)
-        suggestion["edit_locations"] = fixed_locs
-        for k in ["engineer_advice", "risks"]:
-            v = suggestion.get(k)
-            if isinstance(v, str):
-                suggestion[k] = [v]
-            elif not isinstance(v, list):
-                suggestion[k] = []
-        if not suggestion["engineer_advice"]:
-            errs.append("empty_engineer_advice")
-            suggestion["engineer_advice"] = [
-                "优先按候选策略对关键组合路径做局部重构/插入流水线/处理扇出，并回归仿真与复查 STA 报告。"
-            ]
-        if not suggestion["risks"]:
-            errs.append("empty_risks")
-            suggestion["risks"] = ["可能引入额外延迟/面积/功耗副作用；需回归仿真并复查时序。"]
-        ch = suggestion.get("code_hint")
-        if not isinstance(ch, dict):
-            suggestion["code_hint"] = {"language": "verilog", "patch_like": []}
-        else:
-            ch.setdefault("language", "verilog")
-            if "patch_like" not in ch or not isinstance(ch["patch_like"], list):
-                ch["patch_like"] = []
-        return errs
-
-    def _build_summary(
-        self, *, tvir: dict[str, Any], module2_output: dict[str, Any]
-    ) -> dict[str, Any]:
-        ctx = tvir.get("context") or {}
-        frc = self._get_final_root_cause(module2_output)
-        return {
-            "final_primary": frc.get("primary", "UNKNOWN"),
-            "final_secondary": frc.get("secondary", []),
-            "violation_type": ctx.get("violation_type"),
-            "clock": ctx.get("clock") or ctx.get("launch_clock"),
-            "period_ns": ctx.get("period_ns"),
-            "slack_ns": ctx.get("slack_ns"),
-        }
-
-    def _extract_strategies_used(self, suggestion: dict[str, Any]) -> list[str]:
-        out: list[str] = []
-        for s in suggestion.get("chosen_strategies") or []:
-            if isinstance(s, dict) and s.get("id"):
-                out.append(str(s["id"]))
-        return out
-
-    def _render_for_humans(self, *, suggestion: dict[str, Any], tvir: dict[str, Any]) -> str:
-        lines: list[str] = []
-        summ = suggestion.get("summary") or {}
-        lines.append("== Repair Suggestion ==")
-        lines.append(f"- final_primary: {summ.get('final_primary')}")
-        if summ.get("final_secondary"):
-            lines.append(f"- final_secondary: {summ.get('final_secondary')}")
-        lines.append(
-            f"- violation_type: {summ.get('violation_type')}, clock: {summ.get('clock')}, period_ns: {summ.get('period_ns')}, slack_ns: {summ.get('slack_ns')}"
-        )
-        lines.append("\nCandidate strategies (planner Top-K):")
-        for s in suggestion.get("candidate_strategies") or []:
-            lines.append(
-                f"- {s.get('id')} | {s.get('title')} | gain={s.get('timing_gain')} risk={s.get('risk_level')}"
-            )
-        lines.append("\nChosen strategies (LLM):")
-        for item in suggestion.get("chosen_strategies") or []:
-            if not isinstance(item, dict):
-                continue
-            src, sid = (item.get("source"), item.get("id"))
-            conf, reason = (item.get("confidence"), item.get("reason"))
-            title = item.get("title")
-            if src == "custom" and title:
-                lines.append(f"- [{src}] {sid} ({title}) | conf={conf} | {reason}")
-            else:
-                lines.append(f"- [{src}] {sid} | conf={conf} | {reason}")
-        if suggestion.get("edit_locations"):
-            lines.append("\nEdit locations:")
-            for loc in suggestion.get("edit_locations") or []:
-                lines.append(
-                    f"- {loc.get('location_type')} {loc.get('ref')} : {loc.get('rationale')}"
-                )
-        lines.append("\nEngineer advice:")
-        for i, a in enumerate(suggestion.get("engineer_advice") or [], start=1):
-            lines.append(f"{i}. {a}")
-        ch = suggestion.get("code_hint") or {}
-        patch = ch.get("patch_like") or []
-        if patch:
-            lines.append("\nCode hint (patch-like):")
-            lines.append("```verilog")
-            lines.extend([str(x) for x in patch])
-            lines.append("```")
-        risks = suggestion.get("risks") or []
-        if risks:
-            lines.append("\nRisks / side effects:")
-            for r in risks:
-                lines.append(f"- {r}")
-        if tvir.get("rtl_snippet"):
-            lines.append("\nRTL snippet (for reference):")
-            for ln in tvir.get("rtl_snippet") or []:
-                lines.append(str(ln))
-        return "\n".join(lines)
 
     def _build_dataflow_description(self, dataflow_path: list[dict[str, Any]]) -> str:
         parts: list[str] = []

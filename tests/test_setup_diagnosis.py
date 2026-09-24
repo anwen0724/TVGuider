@@ -37,13 +37,13 @@ def test_setup_classifier_excludes_cdc_candidates(setup_tvir):
 
 
 @pytest.mark.parametrize("change", ["hold", "cross_clock"])
-def test_out_of_scope_tvir_is_rejected(setup_tvir, change):
+def test_path_type_and_clock_names_do_not_block_analysis(setup_tvir, change):
     if change == "hold":
         setup_tvir["context"]["violation_type"] = "hold"
     else:
         setup_tvir["context"]["capture_clock"] = "other_clk"
-    with pytest.raises(ValueError, match="setup|clock"):
-        RootCauseClassifier().analyze(setup_tvir)
+    result = RootCauseClassifier().analyze(setup_tvir)
+    assert result.candidates
 
 
 def test_explainer_uses_setup_prompt_and_rejects_cdc_label(setup_tvir):
@@ -71,3 +71,5 @@ def test_non_object_model_json_falls_back_to_rules(setup_tvir):
     result = RootCauseExplainer(Client()).explain_and_adjust(setup_tvir, rule)
     assert result.final_root_cause.primary == rule.root_cause.primary
     assert "parse" in result.explanation.text.lower()
+    assert result.to_dict()["parse_status"] == "failed"
+    assert result.to_dict()["parse_error"]

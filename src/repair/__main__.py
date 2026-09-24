@@ -5,6 +5,8 @@ from contextlib import chdir
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
+from rag.contracts import RagError
+
 from .contracts import RepairConstraints
 from .service import repair_from_tvir
 
@@ -21,7 +23,7 @@ def main(argv=None, *, llm_client=None):
     parser.add_argument(
         "--output",
         required=True,
-        help="Directory for result.json and repaired.v; existing files are not overwritten",
+        help="Directory for model responses, result.json and extracted repaired.v",
     )
     parser.add_argument("--mode", choices=["hybrid", "dense", "bm25"], default="hybrid")
     parser.add_argument("--top-k", type=int, default=5)
@@ -30,14 +32,14 @@ def main(argv=None, *, llm_client=None):
         "--max-tokens", type=int, help="Override the generation budget in DeepSeekClientConfig"
     )
     parser.add_argument("--design-context", help="Optional design constraints / XDC text file")
-    parser.add_argument("--allow-latency-increase", action="store_true")
     args = parser.parse_args(argv)
-    failures = (OSError, ValueError, TypeError, RuntimeError, ImportError)
+    failures = (OSError, ValueError, TypeError, RuntimeError, ImportError, RagError)
     try:
         if args.max_tokens is not None and args.max_tokens <= 0:
             raise ValueError("--max-tokens must be a positive integer")
         output = Path(args.output).resolve()
-        if any((output / name).exists() for name in ("result.json", "repaired.v")):
+        names = ("result.json", "repaired.v", "root_cause_response.json", "repair_response.json")
+        if any((output / name).exists() for name in names):
             raise ValueError("Output files already exist; choose a new output directory")
         rtl = Path(args.rtl).read_text(encoding="utf-8-sig")
         if args.tvir:
@@ -51,9 +53,9 @@ def main(argv=None, *, llm_client=None):
             if not paths:
                 raise ValueError("No negative-slack timing path found")
             tvir = paths[0]
-        from root_cause.validation import validate_setup_tvir
+        from root_cause.validation import validate_tvir
 
-        validate_setup_tvir(tvir)
+        validate_tvir(tvir)
         if llm_client is None:
             from openai import OpenAIError
 
@@ -67,11 +69,16 @@ def main(argv=None, *, llm_client=None):
                 client_config.max_tokens = args.max_tokens
             llm_client = DeepSeekLLMClient(client_config)
         constraints = RepairConstraints(
-            allow_latency_increase=args.allow_latency_increase,
             design_context=Path(args.design_context).read_text(encoding="utf-8-sig")
             if args.design_context
             else "",
         )
+        output.mkdir(parents=True, exist_ok=True)
+
+        def save_response(stage, response):
+            with (output / f"{stage}_response.json").open("x", encoding="utf-8") as stream:
+                json.dump(response, stream, ensure_ascii=False, indent=2)
+
         result = repair_from_tvir(
             tvir,
             rtl,
@@ -80,12 +87,14 @@ def main(argv=None, *, llm_client=None):
             constraints=constraints,
             mode=args.mode,
             top_k=args.top_k,
+            on_response=save_response,
         )
-        output.mkdir(parents=True, exist_ok=True)
         with (output / "result.json").open("x", encoding="utf-8") as stream:
             json.dump(result, stream, ensure_ascii=False, indent=2)
-        with (output / "repaired.v").open("x", encoding="utf-8") as stream:
-            stream.write(result["repair"]["suggestion"]["repaired_rtl"])
+        repaired_rtl = result["repair"]["repaired_rtl"]
+        if isinstance(repaired_rtl, str) and repaired_rtl.strip():
+            with (output / "repaired.v").open("x", encoding="utf-8", newline="") as stream:
+                stream.write(repaired_rtl)
         print(json.dumps({"output": str(output), "validation_status": "not_run"}))
         return 0
     except failures as exc:
