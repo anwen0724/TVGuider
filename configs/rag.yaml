@@ -1,0 +1,9 @@
+model_id: Qwen/Qwen3-Embedding-0.6B
+model_path: C:/all/tools/llm/models/Qwen3-Embedding-0.6B
+revision: 97b0c614be4d77ee51c0cef4e5f07c00f9eb65b3
+dimension: 1024
+max_tokens: 1024
+overlap_tokens: 128
+device: cuda
+dtype: float32
+batch_size: 8
