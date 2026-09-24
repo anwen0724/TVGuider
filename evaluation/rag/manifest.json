@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "version": "2026-09-24-v1",
+  "frozen_before_retrieval": true,
+  "corpus": [
+    {
+      "path": "knowledge/raw/hold-diagnosis.md",
+      "document_id": "hold-diagnosis",
+      "sha256": "e89e5140ec578492d65d542ac8f0d7034fd2e8f1020950328a47f68329c36f4e"
+    },
+    {
+      "path": "knowledge/raw/hold-repair.md",
+      "document_id": "hold-repair",
+      "sha256": "59dd5e9a176a138dc06bc351fcd1dc20b99b031834604eeb1fb266ab4394e571"
+    },
+    {
+      "path": "knowledge/raw/repair-tradeoffs-and-validation.md",
+      "document_id": "repair-tradeoffs-and-validation",
+      "sha256": "2b01da8d597196c78add922f286ce5e8e45bcf5a4d01e9274c7ef474bccf5f07"
+    },
+    {
+      "path": "knowledge/raw/setup-diagnosis.md",
+      "document_id": "setup-diagnosis",
+      "sha256": "689e80364cd0b50d9b16c6aca04bd94ad5145351102cf07f64a766cf877874a9"
+    },
+    {
+      "path": "knowledge/raw/setup-repair.md",
+      "document_id": "setup-repair",
+      "sha256": "38eda96f23a4000b25677cf42c4b24de5734eb0a7e719e34a0ade7c74f7d7fcf"
+    },
+    {
+      "path": "knowledge/raw/timing-fundamentals.md",
+      "document_id": "timing-fundamentals",
+      "sha256": "43eb5311e4c62bd351f5ace81bce5cb9da9983dce2c52ce7efe27c499b173322"
+    }
+  ],
+  "datasets": {
+    "dev": {
+      "path": "evaluation/rag/dev.jsonl",
+      "purpose": "development",
+      "sha256": "8a013882c43df18113965142eecb1edc9395e006643cd3663cd74f41b629ae51",
+      "count": 8,
+      "topics": {
+        "setup": 4,
+        "hold": 4
+      }
+    },
+    "acceptance": {
+      "path": "evaluation/rag/acceptance.jsonl",
+      "purpose": "acceptance",
+      "sha256": "002b4479877f140adbf33110b1d5dfcee51b21b0388f19cbc590b32948b4fe48",
+      "count": 20,
+      "topics": {
+        "setup": 10,
+        "hold": 10
+      }
+    }
+  }
+}
