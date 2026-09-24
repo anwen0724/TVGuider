@@ -1,4 +1,5 @@
 legacy/
+/docs/
 .codegraph/
 .idea/
 .venv/
