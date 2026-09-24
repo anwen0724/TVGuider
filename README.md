@@ -81,10 +81,12 @@ repair_prompt = build_repair_prompt(repair_context, allow_custom_strategy=False)
 已有 Conda `TVGuider` 环境已安装 LLM 依赖；新环境执行 `python -m pip install -e ".[llm]"`。在项目根目录 `.env` 填写 `DEEPSEEK_API_KEY` 与 `DEEPSEEK_BASE_URL`，模板见 `.env.example`。运行示例（将案例路径替换为实际文件）：
 
 ```powershell
-conda run -n TVGuider python -X utf8 -m repair --rtl path/to/design.v --report path/to/timing.txt --kb artifacts/rag/kb --output artifacts/repair/case-001
+conda run -n TVGuider python -X utf8 -m repair --rtl path/to/design.v --report path/to/timing.txt --kb artifacts/rag/kb --output artifacts/repair/case-001 --max-tokens 32768
 ```
 
 CLI 处理报告中的第一条负 slack 路径；若该路径不是 setup 或属于跨时钟场景，则明确失败。也可以用 `--tvir path/to/tvir.json` 替代 `--report`，输入单条 TVIR 对象。`--design-context path/to/design.xdc` 可附加约束文本；模型默认跟随 `DeepSeekClientConfig`，也可通过 `--model` 显式指定。
+
+生成预算同样默认跟随客户端配置，可用 `--max-tokens` 覆盖。本机真实 `deepseek-flash` 修复请求在 8192 tokens 时发生 `finish_reason=length` 且正文为空，因此示例显式给出 32768；实际用量与费用由模型响应决定，不能把截断的输出作为修复结果。
 
 输出目录包含 `repaired.v` 和 `result.json`，后者保存规则结果、最终根因、检索 query/build ID/片段与来源、约束和生成结果。现有同名输出不会覆盖，原始 RTL 不修改。默认不允许增加拍数；确实允许时传 `--allow-latency-increase`。此配置会过滤相关规则策略，并检查模型声明的 `latency_change_cycles`，不构成功能等价或实际延迟验证。
 

@@ -66,3 +66,22 @@ def test_cli_saves_candidate_and_evidence_without_overwriting_input(
     assert rtl.read_text(encoding="utf-8") == original
     assert main(args, llm_client=model) == 1
     assert model.count == 2
+
+
+def test_cli_rejects_invalid_output_budget_before_reading_inputs(capsys):
+    status = main(
+        [
+            "--rtl",
+            "unused",
+            "--tvir",
+            "unused",
+            "--kb",
+            "unused",
+            "--output",
+            "unused",
+            "--max-tokens",
+            "0",
+        ]
+    )
+    assert status == 1
+    assert "max-tokens" in capsys.readouterr().err

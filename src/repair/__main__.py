@@ -26,11 +26,16 @@ def main(argv=None, *, llm_client=None):
     parser.add_argument("--mode", choices=["hybrid", "dense", "bm25"], default="hybrid")
     parser.add_argument("--top-k", type=int, default=5)
     parser.add_argument("--model", help="Override the model configured by DeepSeekClientConfig")
+    parser.add_argument(
+        "--max-tokens", type=int, help="Override the generation budget in DeepSeekClientConfig"
+    )
     parser.add_argument("--design-context", help="Optional design constraints / XDC text file")
     parser.add_argument("--allow-latency-increase", action="store_true")
     args = parser.parse_args(argv)
     failures = (OSError, ValueError, TypeError, RuntimeError, ImportError)
     try:
+        if args.max_tokens is not None and args.max_tokens <= 0:
+            raise ValueError("--max-tokens must be a positive integer")
         output = Path(args.output).resolve()
         if any((output / name).exists() for name in ("result.json", "repaired.v")):
             raise ValueError("Output files already exist; choose a new output directory")
@@ -58,6 +63,8 @@ def main(argv=None, *, llm_client=None):
             client_config = DeepSeekClientConfig()
             if args.model:
                 client_config.model = args.model
+            if args.max_tokens is not None:
+                client_config.max_tokens = args.max_tokens
             llm_client = DeepSeekLLMClient(client_config)
         constraints = RepairConstraints(
             allow_latency_increase=args.allow_latency_increase,
