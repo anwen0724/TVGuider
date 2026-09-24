@@ -1,6 +1,9 @@
 legacy/
 /legacy2/
 /docs/
+.env
+.env.*
+!/.env.example
 .codegraph/
 .idea/
 .venv/
