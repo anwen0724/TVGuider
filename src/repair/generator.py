@@ -22,6 +22,12 @@ class RepairSuggestionResult:
     parse_status: str = "parsed"
     parse_error: str | None = None
     validation_status: str = "not_run"
+    model_raw_response: dict[str, Any] | None = None
+
+    def to_dict(self) -> dict[str, Any]:
+        result = asdict(self)
+        result.pop("model_raw_response")
+        return result
 
 
 @dataclass
@@ -38,8 +44,10 @@ class RepairSuggestionGenerator:
         self.config = config or RepairSuggestionConfig()
 
     def generate(self, **kwargs) -> RepairSuggestionResult:
-        raw = self.llm_client.generate(self.build_prompt(**kwargs))
-        return self.parse_response(raw)
+        response = self.llm_client.generate_response(self.build_prompt(**kwargs))
+        result = self.parse_response(response["content"] or "")
+        result.model_raw_response = response
+        return result
 
     def build_prompt(
         self,

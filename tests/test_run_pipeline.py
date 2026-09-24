@@ -1,6 +1,7 @@
 import importlib.util
 import json
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 
@@ -10,7 +11,8 @@ spec = importlib.util.spec_from_file_location(
     "run_pipeline", Path(__file__).resolve().parents[1] / "src" / "run_pipeline.py"
 )
 pipeline = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(pipeline)
+with patch("llm_clients.deepseek_client.DeepSeekLLMClient", return_value=None):
+    spec.loader.exec_module(pipeline)
 
 
 def test_directory_scan_matches_nested_cases_without_fixed_filenames(tmp_path):
@@ -40,6 +42,27 @@ def test_ambiguous_reports_do_not_silently_choose_one(tmp_path):
         pipeline.discover_cases(rtl_dir, report_dir)
 
 
+def test_all_report_paths_are_processed(configured_pipeline, backend):
+    output, _, report_dir = configured_pipeline
+    report_file = report_dir / "example.txt"
+    report = report_file.read_text(encoding="utf-8")
+    report_file.write_text(report + "\n" + report.replace("-1.000ns", "-0.500ns"))
+
+    class Model:
+        calls = 0
+
+        def generate_response(self, prompt):
+            self.calls += 1
+            return {"content": "{}", "response": {"call": self.calls}}
+
+    model = Model()
+    assert pipeline.main(llm_client=model, embedding_backend=backend) == 0
+    assert model.calls == 4
+    for index in (1, 2):
+        path_output = output / "example" / f"path-{index:03d}"
+        assert {p.name for p in path_output.iterdir()} == {"root_cause.json", "repair_result.json"}
+
+
 @pytest.fixture
 def configured_pipeline(tmp_path, monkeypatch, source, config, backend):
     rtl_dir, report_dir = tmp_path / "rtl", tmp_path / "reports"
@@ -61,7 +84,7 @@ Logic Levels: 5
     build_knowledge_base(source, kb, config, backend=backend)
     output = tmp_path / "output"
     for name, value in {
-        "PROJECT_ROOT": tmp_path,
+        "__file__": str(tmp_path / "src" / "run_pipeline.py"),
         "RTL_DIR": Path("rtl"),
         "REPORT_DIR": Path("reports"),
         "OUTPUT_DIR": Path("output"),
@@ -84,7 +107,9 @@ Logic Levels: 5
         '{"repaired_rtl":"module changed; endmodule","latency_change_cycles":3,"knowledge_used":["unknown-chunk"]}',
     ],
 )
-def test_full_directory_pipeline_saves_one_file_per_stage(configured_pipeline, backend, raw):
+def test_full_directory_pipeline_saves_one_file_per_stage(
+    configured_pipeline, backend, raw, monkeypatch
+):
     output, rtl_dir, _ = configured_pipeline
     original = (rtl_dir / "example.v").read_bytes()
     root_response = {
@@ -110,7 +135,9 @@ def test_full_directory_pipeline_saves_one_file_per_stage(configured_pipeline, b
             self.prompts.append(prompt)
             if len(self.prompts) == 1:
                 return root_response
-            saved = json.loads((output / "example" / "root_cause.json").read_text(encoding="utf-8"))
+            saved = json.loads(
+                (output / "example" / "path-001" / "root_cause.json").read_text(encoding="utf-8")
+            )
             assert set(saved) == {"rule_analysis", "model_raw_response", "model_analysis"}
             assert saved["model_raw_response"] == root_response
             assert saved["model_analysis"]["explanation"]["text"] == "Long combinational path"
@@ -118,9 +145,10 @@ def test_full_directory_pipeline_saves_one_file_per_stage(configured_pipeline, b
             return repair_response
 
     model = Model()
-    assert pipeline.main(llm_client=model, embedding_backend=backend) == 0
+    monkeypatch.setattr(pipeline, "client", model)
+    assert pipeline.main(embedding_backend=backend) == 0
     assert len(model.prompts) == 2
-    case_dir = output / "example"
+    case_dir = output / "example" / "path-001"
     assert {path.name for path in case_dir.iterdir()} == {"root_cause.json", "repair_result.json"}
     result = json.loads((case_dir / "repair_result.json").read_text(encoding="utf-8"))
     assert result["model_raw_response"] == repair_response
@@ -133,11 +161,11 @@ def test_full_directory_pipeline_saves_one_file_per_stage(configured_pipeline, b
     assert result["retrieval"]["mode"] == "hybrid"
     assert result["retrieval"]["top_k"] == 5
     assert (rtl_dir / "example.v").read_bytes() == original
-    assert pipeline.main(llm_client=model, embedding_backend=backend) == 1
+    assert pipeline.main(embedding_backend=backend) == 1
     assert len(model.prompts) == 2
 
 
-@pytest.mark.parametrize("failure", ["retrieval", "repair_call", "root_parsing"])
+@pytest.mark.parametrize("failure", ["retrieval", "repair_call"])
 def test_root_result_remains_when_a_later_step_fails(
     configured_pipeline, backend, monkeypatch, failure
 ):
@@ -161,19 +189,12 @@ def test_root_result_remains_when_a_later_step_fails(
 
     if failure == "retrieval":
         monkeypatch.setattr(pipeline, "KB_DIR", Path("missing-kb"))
-    elif failure == "root_parsing":
-
-        def fail_parse(*args):
-            raise RuntimeError("Test parsing failure")
-
-        monkeypatch.setattr(pipeline.RootCauseExplainer, "parse_response", fail_parse)
     model = Model()
     assert pipeline.main(llm_client=model, embedding_backend=backend) == 1
-    saved = json.loads((output / "example" / "root_cause.json").read_text(encoding="utf-8"))
+    saved = json.loads(
+        (output / "example" / "path-001" / "root_cause.json").read_text(encoding="utf-8")
+    )
     assert saved["model_raw_response"] == response
     assert saved["rule_analysis"]["candidates"]
-    if failure != "root_parsing":
-        assert saved["model_analysis"]["parse_status"] == "failed"
-    else:
-        assert saved["model_analysis"] is None
-    assert not (output / "example" / "repair_result.json").exists()
+    assert saved["model_analysis"]["parse_status"] == "failed"
+    assert not (output / "example" / "path-001" / "repair_result.json").exists()

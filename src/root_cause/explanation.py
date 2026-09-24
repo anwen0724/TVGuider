@@ -39,6 +39,7 @@ class RootCauseLLMOutput:
     selection_rationale: SelectionRationale
     parse_status: str = "parsed"
     parse_error: str | None = None
+    model_raw_response: dict[str, Any] | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -76,8 +77,10 @@ class RootCauseExplainer:
     def explain_and_adjust(
         self, tvir: dict[str, Any], rule_result: RootCauseResult
     ) -> RootCauseLLMOutput:
-        raw = self.llm_client.generate(self.build_prompt(tvir, rule_result))
-        return self.parse_response(raw, rule_result)
+        response = self.llm_client.generate_response(self.build_prompt(tvir, rule_result))
+        result = self.parse_response(response["content"] or "", rule_result)
+        result.model_raw_response = response
+        return result
 
     def build_prompt(self, tvir: dict[str, Any], rule_result: RootCauseResult) -> str:
         validate_tvir(tvir)

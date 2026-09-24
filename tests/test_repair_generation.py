@@ -41,9 +41,9 @@ class Client:
         self.response = response
         self.prompts = []
 
-    def generate(self, prompt):
+    def generate_response(self, prompt):
         self.prompts.append(prompt)
-        return json.dumps(self.response)
+        return {"content": json.dumps(self.response)}
 
 
 def test_full_rtl_and_retrieved_evidence_reach_the_model(generation_case):
@@ -140,8 +140,8 @@ def test_model_code_is_preserved_without_separate_rtl_extraction(generation_case
     tvir, final, plan, retrieval, _ = generation_case
 
     class Model:
-        def generate(self, prompt):
-            return raw
+        def generate_response(self, prompt):
+            return {"content": raw, "finish_reason": "length", "response": {"kept": True}}
 
     result = RepairSuggestionGenerator(Model()).generate(
         tvir=tvir,
@@ -153,3 +153,8 @@ def test_model_code_is_preserved_without_separate_rtl_extraction(generation_case
     assert result.raw_output == raw
     assert not hasattr(result, "repaired_rtl")
     assert result.validation_status == "not_run"
+    assert result.model_raw_response == {
+        "content": raw,
+        "finish_reason": "length",
+        "response": {"kept": True},
+    }

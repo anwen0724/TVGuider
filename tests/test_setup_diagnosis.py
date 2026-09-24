@@ -50,9 +50,9 @@ def test_explainer_uses_setup_prompt_and_rejects_cdc_label(setup_tvir):
     class Client:
         prompt = ""
 
-        def generate(self, prompt):
+        def generate_response(self, prompt):
             self.prompt = prompt
-            return '{"final_root_cause":{"primary":"C1_cdc_missing_synchronizer"}}'
+            return {"content": '{"final_root_cause":{"primary":"C1_cdc_missing_synchronizer"}}'}
 
     client = Client()
     rule = RootCauseClassifier().analyze(setup_tvir)
@@ -63,9 +63,11 @@ def test_explainer_uses_setup_prompt_and_rejects_cdc_label(setup_tvir):
 
 
 def test_non_object_model_json_falls_back_to_rules(setup_tvir):
+    response = {"content": "[]", "model": "fixture", "response": {"provider_field": "kept"}}
+
     class Client:
-        def generate(self, prompt):
-            return "[]"
+        def generate_response(self, prompt):
+            return response
 
     rule = RootCauseClassifier().analyze(setup_tvir)
     result = RootCauseExplainer(Client()).explain_and_adjust(setup_tvir, rule)
@@ -73,3 +75,4 @@ def test_non_object_model_json_falls_back_to_rules(setup_tvir):
     assert "parse" in result.explanation.text.lower()
     assert result.to_dict()["parse_status"] == "failed"
     assert result.to_dict()["parse_error"]
+    assert result.model_raw_response == response

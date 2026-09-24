@@ -26,7 +26,7 @@ python -m pip install -e ".[llm,dev]"
 
 # 将 .env.example 复制为 .env 并填写 API Key
 # 配置 configs/rag.yaml 和 src/run_pipeline.py 开头的参数
-# 安装 Icarus Verilog，将其加入 PATH 或配置 IVERILOG_DIR
+# 安装 Icarus Verilog，并确保 PATH 中能找到 iverilog
 
 # 下载嵌入模型
 python scripts/provision_model.py --config configs/rag.yaml
