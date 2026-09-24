@@ -136,7 +136,7 @@ def test_incomplete_or_unverified_output_is_returned_without_rejection(generatio
         '{"repaired_rtl":"```verilog\nmodule m; endmodule\n```"}'.replace("\n", "\\n"),
     ],
 )
-def test_rtl_extraction_does_not_require_valid_suggestion_fields(generation_case, raw):
+def test_model_code_is_preserved_without_separate_rtl_extraction(generation_case, raw):
     tvir, final, plan, retrieval, _ = generation_case
 
     class Model:
@@ -151,5 +151,5 @@ def test_rtl_extraction_does_not_require_valid_suggestion_fields(generation_case
         retrieval=retrieval,
     )
     assert result.raw_output == raw
-    assert result.repaired_rtl.strip() == "module m; endmodule"
+    assert not hasattr(result, "repaired_rtl")
     assert result.validation_status == "not_run"

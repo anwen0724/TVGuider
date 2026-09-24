@@ -6,8 +6,6 @@ from dataclasses import dataclass
 from dotenv import load_dotenv
 from openai import OpenAI
 
-from .responses import openai_response
-
 load_dotenv()
 
 
@@ -38,7 +36,15 @@ class OpenAILLMClient:
             temperature=self.cfg.temperature,
             max_tokens=self.cfg.max_tokens,
         )
-        return openai_response(resp)
+        data = resp.model_dump(mode="json")
+        choice = next(iter(data.get("choices") or []), {})
+        return {
+            "content": (choice.get("message") or {}).get("content"),
+            "model": data.get("model"),
+            "finish_reason": choice.get("finish_reason"),
+            "usage": data.get("usage"),
+            "response": data,
+        }
 
 
 if __name__ == "__main__":

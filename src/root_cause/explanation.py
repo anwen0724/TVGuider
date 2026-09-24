@@ -76,12 +76,17 @@ class RootCauseExplainer:
     def explain_and_adjust(
         self, tvir: dict[str, Any], rule_result: RootCauseResult
     ) -> RootCauseLLMOutput:
+        raw = self.llm_client.generate(self.build_prompt(tvir, rule_result))
+        return self.parse_response(raw, rule_result)
+
+    def build_prompt(self, tvir: dict[str, Any], rule_result: RootCauseResult) -> str:
         validate_tvir(tvir)
+        llm_context = self._build_llm_context(tvir, rule_result)
+        return build_root_cause_prompt(llm_context, language=self.config.language)
+
+    def parse_response(self, raw: str, rule_result: RootCauseResult) -> RootCauseLLMOutput:
         rule_primary = str(rule_result.root_cause.primary)
         rule_secondary = [str(x) for x in rule_result.root_cause.secondary]
-        llm_context = self._build_llm_context(tvir, rule_result)
-        prompt = build_root_cause_prompt(llm_context, language=self.config.language)
-        raw = self.llm_client.generate(prompt)
         data = self._parse_llm_json(raw)
         unknown_selected = False
         if data is None:

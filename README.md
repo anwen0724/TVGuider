@@ -55,7 +55,7 @@ for hit in response.results:
 
 ## 使用 TVIR
 
-入口是 `tvir.api.build_tvir_dicts_from_vivado_report_and_rtl(report_text, rtl_text)`，接收 Vivado 报告文本和对应 RTL 文本，返回 TVIR 字典列表。默认仅处理负 slack 路径；`only_violations=False` 可包含非违例路径。下述修复 CLI 可调用该入口，然后连接根因分析、RAG 和修复生成。
+入口是 `tvir.api.build_tvir_dicts_from_vivado_report_and_rtl(report_text, rtl_text)`，接收 Vivado 报告文本和对应 RTL 文本，返回 TVIR 字典列表。默认仅处理负 slack 路径；`only_violations=False` 可包含非违例路径。全流程入口 `src/run_pipeline.py` 调用该接口，然后连接根因分析、RAG 和修复生成。
 
 Python 依赖包含 `pyverilog==1.3.0`，同时要求系统 PATH 可找到 Icarus Verilog 的 `iverilog`。现有 `TVGuider` Conda 环境已完成依赖安装。Pyverilog 会在运行目录生成解析器文件，验证时使用临时工作目录。
 
@@ -74,38 +74,39 @@ repair_prompt = build_repair_prompt(repair_context, allow_custom_strategy=False)
 
 `src/root_cause/` 和 `src/repair/` 已调用这两个构建函数。模板保留中英文选项，根因标签限定 setup；修复模板接收完整 RTL、设计约束和 RAG 片段，要求返回完整 RTL 候选、修改说明与知识引用。业务模块中不再保存提示词正文。
 
-## Setup 根因分析与修复
+## 在 PyCharm 中运行完整流程
 
-流程为：TVIR → 规则特征与评分 → LLM 根因解释 → 英文查询 → RAG 混合检索 → LLM 修复候选。默认 `hybrid`、`top_k=5`，五条知识片段与最多三条旧规则候选策略分别传入模型。规则保留 S1 组合路径、S2 扇出、S3 算术流水线和 S4 跨层次类别。不按违例类型或时钟名称拦截输入；未新增 hold 或 CDC 专用规则与策略。
+直接打开 `src/run_pipeline.py`。运行需要填写的配置都在文件开头，包括 `RTL_DIR`、`REPORT_DIR`、`OUTPUT_DIR`、`KB_DIR`、`ENV_FILE`、`LLM_CONFIG`、`DESIGN_CONTEXT`、检索方式、`TOP_K`、`MAX_PATHS` 和 Icarus 路径。输入是目录，不需要指定文件名或填写命令行参数。
 
-已有 Conda `TVGuider` 环境已安装 LLM 依赖；新环境执行 `python -m pip install -e ".[llm]"`。在项目根目录 `.env` 填写 `DEEPSEEK_API_KEY` 与 `DEEPSEEK_BASE_URL`，模板见 `.env.example`。运行示例（将案例路径替换为实际文件）：
+1. 在 PyCharm 的 Python Interpreter 设置中选择已有 Conda `TVGuider` 环境，解释器路径为 `C:/all/environments/anaconda3/envs/TVGuider/python.exe`。无需新建虚拟环境。[JetBrains 官方说明](https://www.jetbrains.com/help/pycharm/conda-support-creating-conda-virtual-environment.html)
+2. 检查 `src/run_pipeline.py` 开头的目录和模型配置。代码和报告默认指向此前使用的 VioAdvisor `code_and_xdc/all_code/s3_code`、`code_and_xdc/all_reports/s3_reports`；输出默认为项目下 `artifacts/pipeline`，知识库为 `artifacts/rag/kb`。
+3. 项目根目录 `.env` 配置 `DEEPSEEK_API_KEY` 和 `DEEPSEEK_BASE_URL`。现有 Conda 环境已安装依赖；新环境需安装 `python -m pip install -e ".[llm]"`。
+4. 在编辑器中右键 `run_pipeline.py`，选择 **Run 'run_pipeline'**。[JetBrains 官方说明](https://www.jetbrains.com/help/pycharm/running-applications.html)
 
-```powershell
-conda run -n TVGuider python -X utf8 -m repair --rtl path/to/design.v --report path/to/timing.txt --kb artifacts/rag/kb --output artifacts/repair/case-001 --max-tokens 32768
+运行配置的 Parameters 留空。所有相对路径以项目目录为基准；脚本默认从项目根目录读取 `.env`，不依赖 PyCharm 的 Working directory。也可以在项目根目录执行 `python src/run_pipeline.py`。
+
+入口递归扫描 `.v` 代码和 `.txt`/`.rpt` 报告，按相对目录和文件主名配对，例如 `group/design.v` 对应 `group/design.txt`。此规则针对当前一份 RTL 对应一份报告的独立案例。不会将一个多文件设计的所有 RTL 自动拼接，也不会根据不一致的名称猜测对应关系；缺失配对或重复报告会列出问题。默认 `MAX_PATHS=1` 处理每份报告的第一条负 slack 路径；设为 `None` 可处理所有负 slack 路径，存在多条路径时增加 `path-001` 等输出子目录。
+
+执行顺序：RTL/STA → TVIR → 规则根因分析 → 模型根因分析 → 保存根因结果 → RAG 检索 → 修复策略 → 模型修复生成 → 保存修复结果。规则保留 S1–S4；没有新增接口/拍数限制、hold/不同时钟名称拦截，也没有新增 hold/CDC 专用算法。默认检索 `hybrid`、`top_k=5`。
+
+每个案例只保存两个文件：
+
+```text
+artifacts/pipeline/
+  design/
+    root_cause.json
+    repair_result.json
 ```
 
-CLI 处理报告中的第一条负 slack 路径。也可以用 `--tvir path/to/tvir.json` 替代 `--report`，输入单条 TVIR 对象。`--design-context path/to/design.xdc` 可附加约束文本；模型默认跟随 `DeepSeekClientConfig`，也可通过 `--model` 显式指定。
+`root_cause.json` 内部使用 `rule_analysis`、`model_raw_response`、`model_analysis` 区分规则判断、模型原始响应、解析后的根因。原始响应收到后立即写入此文件，解析完更新同一个文件；根因阶段结束就已保存，不等待修复完成。
 
-生成预算默认跟随客户端配置，可用 `--max-tokens` 覆盖单次调用预算。DeepSeek、Qwen 默认 32768；GPT-4o 默认 16384（[官方输出上限](https://developers.openai.com/api/docs/models/gpt-4o)）。旧 Claude 配置的模型已在 [Anthropic 下线记录](https://platform.claude.com/docs/en/about-claude/model-deprecations) 中停用，Together 的 CodeLlama 70B 也在 [下线记录](https://docs.together.ai/docs/deprecations) 中；这两个遗留客户端的预算分别保留 8192、1200，没有擅自更换模型。RAG 的 1024-token 分块配置不变。
+`repair_result.json` 内部为 `retrieval`、`model_raw_response`、`model_result`。模型返回的 RTL 文本保留在 JSON 中，不提取 `.v` 文件。原始响应包含 SDK 返回内容及可用的模型名、结束原因和 token 用量；空正文、截断内容和解析失败都保存。程序的 `validation_status="not_run"` 不随模型自行声称通过而改变；功能与时序评估属于后续工作。
 
-`--output` 为必填目录参数，没有默认目录。每次模型返回后、业务解析之前，立即写入 `root_cause_response.json` 或 `repair_response.json`，保存正文、返回模型、结束原因、token 用量及完整 SDK 响应。SDK 未提供的字段保存为 null。只实现 `generate(prompt)` 的第三方客户端仍可使用，记录其返回文本，无法取得的元数据为 null。
+已有结果不覆盖，重复运行时修改 `OUTPUT_DIR` 指向新目录。单个案例运行失败会在控制台指出，并继续后续案例；已保存的文件保留。全部完成退出 0，存在运行失败退出 1。没有单独的响应文件、重复汇总文件、保存回调或记录器。
 
-`result.json` 保存规则结果、整理后的根因、检索证据、模型响应和修复解析结果。修复返回的 JSON 对象按原样保留，不删除或替换模型字段；缺少字段、引用异常、声明增加拍数都不会阻止保存。空正文、截断内容和非法 JSON 记录 `parse_status="failed"` 与 `parse_error`，原始响应照常保留。根因解析失败仍沿用规则回退，并记录解析状态。`validation_status="not_run"` 是程序层状态，和模型自行声明的状态分开。
+主入口默认 `deepseek-flash`，`max_tokens=32768`，可在开头的 `LLM_CONFIG` 调整。RAG 的 1024-token 分块参数不变。独立客户端配置：Qwen 32768；GPT-4o 16384（[官方上限](https://developers.openai.com/api/docs/models/gpt-4o)）。旧 Claude 与 Together CodeLlama 仍保留原模型和预算；这些旧模型的状态见 [Claude](https://platform.claude.com/docs/en/about-claude/model-deprecations) 和 [Together](https://docs.together.ai/docs/deprecations) 下线记录。
 
-能从 JSON 的 `repaired_rtl`、Verilog 代码围栏或以 module/常用编译指令起始的纯 RTL 文本中提取代码时，另存 `repaired.v`；无可提取代码时不生成此文件。提取不检查语法、功能或时序。后续检索或处理失败时，先前已收到的响应文件仍然保留。已有同名文件不覆盖，原始 RTL 不修改。
-
-```python
-from repair import RepairConstraints, repair_from_tvir
-
-result = repair_from_tvir(
-    tvir, original_rtl, kb_dir="artifacts/rag/kb", llm_client=client,
-    constraints=RepairConstraints(design_context=xdc_text),
-)
-raw_response = result["responses"]["repair"]
-repaired_rtl = result["repair"]["repaired_rtl"]  # None when no RTL is extractable
-```
-
-Python API 默认只返回内存中的字典，不创建结果目录。需要边调用边保存时，可传入 `on_response(stage, response)` 回调；CLI 使用此回调立即落盘。根因分析与修复生成各调用一次模型，接口与拍数没有新增的强制保持条件。功能、等价性、实际延迟和 STA 留给后续验证。修改记录见 [输出保留调整](C:/Users/anwen/Desktop/tv-guider/docs/notes/output-preservation.md)。
+旧 `repair/service.py`、`repair/__main__.py` 和 `llm_clients/responses.py` 已删除。根因分析和修复模块分别提供 `build_prompt()`、`parse_response()`，入口直接调用现有客户端的 `generate_response()`，直接写入对应阶段文件。
 
 ## 验证与评估
 
@@ -120,6 +121,6 @@ conda run -n TVGuider python -m rag.evaluate --kb artifacts/rag/kb --dataset eva
 
 默认测试不运行模型组；显式 `-m model` 会实际加载本地模型，缺模型会失败。评估输出 `report.json`（逐题 Top-5 和配置）及 `report.md`；验收未达标退出码为 2，输入或运行错误为 1。
 
-TVIR 仍保留旧代码的 lint 问题，因此上面的全项目 `ruff check` 当前未通过。本次范围可运行 `ruff check src/root_cause src/repair src/prompts src/llm_clients src/rag tests scripts`；旧 TVIR 的检查结果见其迁移验证记录。
+TVIR 仍保留旧代码的 lint 问题，因此上面的全项目 `ruff check` 当前未通过。本次范围可运行 `ruff check src/run_pipeline.py src/root_cause src/repair src/prompts src/llm_clients src/rag tests scripts`；旧 TVIR 的检查结果见其迁移验证记录。
 
 开发集 8 问与验收集 20 问分开保存，manifest 固定其用途及 SHA-256。验收要求 hybrid 总体至少 16/20，setup 和 hold 分别至少 8/10。不能使用验收集调参后仍将其作为独立验收；资料变更后的评估需重新审阅标签并显式更新冻结记录。

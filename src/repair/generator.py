@@ -22,7 +22,6 @@ class RepairSuggestionResult:
     parse_status: str = "parsed"
     parse_error: str | None = None
     validation_status: str = "not_run"
-    repaired_rtl: str | None = None
 
 
 @dataclass
@@ -38,7 +37,11 @@ class RepairSuggestionGenerator:
         self.llm_client = llm_client
         self.config = config or RepairSuggestionConfig()
 
-    def generate(
+    def generate(self, **kwargs) -> RepairSuggestionResult:
+        raw = self.llm_client.generate(self.build_prompt(**kwargs))
+        return self.parse_response(raw)
+
+    def build_prompt(
         self,
         *,
         tvir: dict[str, Any],
@@ -47,7 +50,7 @@ class RepairSuggestionGenerator:
         original_rtl: str,
         retrieval,
         constraints=None,
-    ) -> RepairSuggestionResult:
+    ) -> str:
         validate_tvir(tvir)
         if not isinstance(original_rtl, str) or not original_rtl.strip():
             raise ValueError("Original RTL must be nonempty")
@@ -63,7 +66,10 @@ class RepairSuggestionGenerator:
             language=self.config.language,
             allow_custom_strategy=self.config.allow_custom_strategy,
         )
-        raw = self.llm_client.generate(prompt) or ""
+        return prompt
+
+    def parse_response(self, raw: str) -> RepairSuggestionResult:
+        raw = raw or ""
         parsed, parse_err = self._parse_llm_json(raw)
         suggestion = parsed if parsed is not None else {}
         chosen = suggestion.get("chosen_strategies")
@@ -79,26 +85,7 @@ class RepairSuggestionGenerator:
             raw_output=raw,
             parse_status="parsed" if parsed is not None else "failed",
             parse_error=parse_err or None,
-            repaired_rtl=self._extract_rtl(suggestion, raw),
         )
-
-    def _extract_rtl(self, suggestion, raw):
-        rtl = suggestion.get("repaired_rtl")
-        if isinstance(rtl, str) and rtl.strip():
-            fenced = re.fullmatch(
-                r"\s*```(?:verilog|systemverilog|sv)?\s*\n(.*?)\n```\s*",
-                rtl,
-                re.DOTALL | re.IGNORECASE,
-            )
-            return fenced.group(1) if fenced else rtl
-        blocks = re.findall(
-            r"```(?:verilog|systemverilog|sv)\s*\n(.*?)\n```", raw, re.DOTALL | re.IGNORECASE
-        )
-        if blocks:
-            return "\n".join(blocks)
-        if re.match(r"\s*(?:module\s|`timescale\b|`include\b|`default_nettype\b)", raw):
-            return raw
-        return None
 
     def _build_llm_context_for_repair(
         self, *, tvir: dict[str, Any], module2_output: dict[str, Any], repair_plan: RepairPlan
