@@ -30,8 +30,6 @@ class QwenLLMClient:
             api_key=self.cfg.api_key or os.getenv("QWEN_API_KEY"),
             base_url=self.cfg.base_url or os.getenv("QWEN_BASE_URL"),
         )
-        print("QWEN_API_KEY =", os.getenv("QWEN_API_KEY"))
-        print("QWEN_BASE_URL =", os.getenv("QWEN_BASE_URL"))
 
     def generate(self, prompt: str) -> str:
         return self.generate_response(prompt)["content"] or ""

@@ -13,7 +13,7 @@ load_dotenv()
 
 @dataclass
 class DeepSeekClientConfig:
-    model: str = "deepseek-reasoner"
+    model: str = "deepseek-flash"
     temperature: float = 0.2
     max_tokens: int = 32768
     api_key: str | None = None
