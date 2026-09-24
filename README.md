@@ -19,7 +19,7 @@ Verilog 时序违例分析与大模型辅助修复项目，目前处于从论文
 
 建议先阅读 [代码探索记录](C:/Users/anwen/Desktop/tv-guider/docs/notes/2026-09-24-codegraph-exploration.md)，了解已经实现的能力、未完成部分及验证范围。
 
-方法由 TVIR 构建、RAG 知识库构建与检索、根因分析、修复结果生成四个核心模块组成，输入是 RTL 代码与对应的 STA 时序报告。详见 [方法模块与关系](C:/Users/anwen/Desktop/tv-guider/docs/spec/method-modules.md)。基础版覆盖 setup、hold，暂不纳入 CDC；先实现独立的 RAG 知识库构建与检索，后续生成类模型优先使用 DeepSeek。项目术语见 [CONTEXT.md](C:/Users/anwen/Desktop/tv-guider/CONTEXT.md)。
+方法由 TVIR 构建、RAG 知识库构建与检索、根因分析、修复结果生成四个核心模块组成，输入是 RTL 代码与对应的 STA 时序报告。详见 [方法模块与关系](C:/Users/anwen/Desktop/tv-guider/docs/spec/method-modules.md)。当前根因分析与修复生成仅覆盖 setup，排除 hold 和 CDC；已建成的独立 RAG 保留原有 setup/hold 资料。生成类模型默认使用 DeepSeek。项目术语见 [CONTEXT.md](C:/Users/anwen/Desktop/tv-guider/CONTEXT.md)。
 
 [RAG 知识库构建与独立检索 Spec](C:/Users/anwen/Desktop/tv-guider/docs/spec/rag-knowledge-base.md) 定义英文 Markdown、本地 Qwen3-Embedding-0.6B、Qdrant 与 BM25、RRF 混合检索，以及功能和检索效果验收标准。
 
@@ -55,7 +55,7 @@ for hit in response.results:
 
 ## 使用 TVIR
 
-入口是 `tvir.api.build_tvir_dicts_from_vivado_report_and_rtl(report_text, rtl_text)`，接收 Vivado 报告文本和对应 RTL 文本，返回 TVIR 字典列表。默认仅处理负 slack 路径；`only_violations=False` 可包含非违例路径。当前没有新增 CLI，也未接入根因分析、RAG 或修复生成。
+入口是 `tvir.api.build_tvir_dicts_from_vivado_report_and_rtl(report_text, rtl_text)`，接收 Vivado 报告文本和对应 RTL 文本，返回 TVIR 字典列表。默认仅处理负 slack 路径；`only_violations=False` 可包含非违例路径。下述修复 CLI 可调用该入口，然后连接根因分析、RAG 和修复生成。
 
 Python 依赖包含 `pyverilog==1.3.0`，同时要求系统 PATH 可找到 Icarus Verilog 的 `iverilog`。现有 `TVGuider` Conda 环境已完成依赖安装。Pyverilog 会在运行目录生成解析器文件，验证时使用临时工作目录。
 
@@ -72,7 +72,33 @@ diagnosis_prompt = build_root_cause_prompt(diagnosis_context)
 repair_prompt = build_repair_prompt(repair_context, allow_custom_strategy=False)
 ```
 
-本次保留旧版中英文模板内容，尚未迁移 `legacy2/root_cause` 和 `legacy2/repair` 的调用方；后续迁移时改为调用上述函数。RAG 上下文接入和完整 RTL 输出要求尚未加入模板，当前 repair 模板仍用于生成修复建议。
+`src/root_cause/` 和 `src/repair/` 已调用这两个构建函数。模板保留中英文选项，根因标签限定 setup；修复模板接收完整 RTL、设计约束和 RAG 片段，要求返回完整 RTL 候选、修改说明与知识引用。业务模块中不再保存提示词正文。
+
+## Setup 根因分析与修复
+
+流程为：TVIR → 规则特征与评分 → LLM 根因解释 → 英文查询 → RAG 混合检索 → LLM 修复候选。默认 `hybrid`、`top_k=5`，五条知识片段与最多三条旧规则候选策略分别传入模型。规则保留 S1 组合路径、S2 扇出、S3 算术流水线和 S4 跨层次类别；hold 与跨时钟输入会被拒绝。
+
+已有 Conda `TVGuider` 环境已安装 LLM 依赖；新环境执行 `python -m pip install -e ".[llm]"`。在项目根目录 `.env` 填写 `DEEPSEEK_API_KEY` 与 `DEEPSEEK_BASE_URL`，模板见 `.env.example`。运行示例（将案例路径替换为实际文件）：
+
+```powershell
+conda run -n TVGuider python -X utf8 -m repair --rtl path/to/design.v --report path/to/timing.txt --kb artifacts/rag/kb --output artifacts/repair/case-001
+```
+
+CLI 处理报告中的第一条负 slack 路径；若该路径不是 setup 或属于跨时钟场景，则明确失败。也可以用 `--tvir path/to/tvir.json` 替代 `--report`，输入单条 TVIR 对象。`--design-context path/to/design.xdc` 可附加约束文本；模型默认跟随 `DeepSeekClientConfig`，也可通过 `--model` 显式指定。
+
+输出目录包含 `repaired.v` 和 `result.json`，后者保存规则结果、最终根因、检索 query/build ID/片段与来源、约束和生成结果。现有同名输出不会覆盖，原始 RTL 不修改。默认不允许增加拍数；确实允许时传 `--allow-latency-increase`。此配置会过滤相关规则策略，并检查模型声明的 `latency_change_cycles`，不构成功能等价或实际延迟验证。
+
+```python
+from repair import RepairConstraints, repair_from_tvir
+
+result = repair_from_tvir(
+    tvir, original_rtl, kb_dir="artifacts/rag/kb", llm_client=client,
+    constraints=RepairConstraints(allow_latency_increase=False),
+)
+repaired_rtl = result["repair"]["suggestion"]["repaired_rtl"]
+```
+
+生成结果始终标记 `validation_status="not_run"`，需要后续仿真、综合和 STA。缺失正文、非法知识引用和不符合声明延迟约束的模型输出会失败，不会退回普通建议并假装生成成功。接口与测试范围见 [Setup 接入记录](C:/Users/anwen/Desktop/tv-guider/docs/notes/setup-reuse-validation.md)。
 
 ## 验证与评估
 
@@ -87,6 +113,6 @@ conda run -n TVGuider python -m rag.evaluate --kb artifacts/rag/kb --dataset eva
 
 默认测试不运行模型组；显式 `-m model` 会实际加载本地模型，缺模型会失败。评估输出 `report.json`（逐题 Top-5 和配置）及 `report.md`；验收未达标退出码为 2，输入或运行错误为 1。
 
-TVIR 移植保留了旧代码的 lint 问题，因此上面的全项目 `ruff check` 当前未通过；`ruff check src/rag tests scripts` 与全项目格式检查通过。具体检查结果记录在 TVIR 迁移验证记录中。
+TVIR 与 LLM 客户端仍保留旧代码的 lint 问题，因此上面的全项目 `ruff check` 当前未通过。本次范围可运行 `ruff check src/root_cause src/repair src/prompts src/rag tests scripts`；旧 TVIR 的检查结果见其迁移验证记录。
 
 开发集 8 问与验收集 20 问分开保存，manifest 固定其用途及 SHA-256。验收要求 hybrid 总体至少 16/20，setup 和 hold 分别至少 8/10。不能使用验收集调参后仍将其作为独立验收；资料变更后的评估需重新审阅标签并显式更新冻结记录。
