@@ -53,5 +53,5 @@ class CodeLlamaLLMClient:
 if __name__ == "__main__":
     client = CodeLlamaLLMClient()
 
-    response = client.generate("写一个 Python 快速排序函数")
+    response = client.generate("Explain setup and hold timing violations in synchronous circuits.")
     print(response)

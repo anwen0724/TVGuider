@@ -19,7 +19,7 @@ After a setup or hold change, rerun both maximum-delay and minimum-delay analysi
 
 ## Preserve functional timing when adding latency
 
-Late pipeline insertion can propagate latency differences throughout a circuit. For this project, a proposed RTL repair should therefore state whether cycle latency changes, identify dependent control and parallel paths, and define the corresponding functional checks before acceptance. Reset behavior, enable behavior, data ordering and valid alignment belong in those checks. These are project review criteria inferred from the architectural impact; this document contains no executed equivalence proof. Source: [AMD UG949 planning pipeline latency](https://docs.amd.com/r/en-US/ug949-vivado-design-methodology/Consider-Pipelining-Up-Front).
+Late pipeline insertion can propagate latency differences throughout a circuit. A proposed RTL repair should therefore state whether cycle latency changes, identify dependent control and parallel paths, and define the corresponding functional checks. Reset behavior, enable behavior, data ordering and valid alignment belong in those checks. These checks follow from the architectural impact of adding pipeline stages; functional equivalence requires separate verification. Source: [AMD UG949 planning pipeline latency](https://docs.amd.com/r/en-US/ug949-vivado-design-methodology/Consider-Pipelining-Up-Front).
 
 ## Resource cost and setup versus hold interaction
 
@@ -33,7 +33,7 @@ Hold-fixing detours can worsen setup; evaluate the final route rather than assum
 | Add physical data delay | More minimum-delay margin | Setup slack after implementation |
 | Change a clock constraint | Accurate analysis relationship | Evidence that the new constraint matches hardware |
 
-The table is a project review aid, not a set of validated repairs.
+The table summarizes candidate transformations and the checks needed to evaluate them.
 
 ## Signoff uses implemented timing evidence
 
@@ -41,4 +41,4 @@ In Vivado, review timing after placement and routing, using the post-implementat
 
 ## Reproduce an ASIC timing comparison
 
-For an OpenSTA-based comparison, retain the exact netlist, Liberty libraries, SDC constraints and applicable parasitic or annotated-delay inputs. Record whether clocks are ideal or propagated. These supported inputs determine what is being analyzed; changing them between runs can invalidate a claimed repair comparison. The RAG module retrieves this guidance but does not execute STA or certify a repaired circuit. Source: [OpenSTA input formats and clock support](https://github.com/The-OpenROAD-Project/OpenSTA).
+For an OpenSTA-based comparison, retain the exact netlist, Liberty libraries, SDC constraints and applicable parasitic or annotated-delay inputs. Record whether clocks are ideal or propagated. These supported inputs determine what is being analyzed; changing them between runs can invalidate a claimed repair comparison. Source: [OpenSTA input formats and clock support](https://github.com/The-OpenROAD-Project/OpenSTA).

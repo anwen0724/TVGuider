@@ -53,5 +53,5 @@ class QwenLLMClient:
 if __name__ == "__main__":
     client = QwenLLMClient()
 
-    response = client.generate("告诉我你是那个公司的那款模型,你的模型具体型号是什么？")
+    response = client.generate("Explain setup and hold timing violations in synchronous circuits.")
     print(response)

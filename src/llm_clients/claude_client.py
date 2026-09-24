@@ -52,5 +52,5 @@ class ClaudeLLMClient:
 if __name__ == "__main__":
     client = ClaudeLLMClient()
 
-    response = client.generate("你是claude3.5还是claude4？")
+    response = client.generate("Explain setup and hold timing violations in synchronous circuits.")
     print(response)
