@@ -15,6 +15,8 @@ Verilog 时序违例分析与大模型辅助修复项目，目前处于从论文
 
 2026-09-24 已将原有业务代码和实验材料整体移入 `legacy/`。新版 RAG 实现在 `src/rag/`，通过 Python API 与 `python -m rag` 使用；旧实验归档不纳入新版 Git 仓库。
 
+从 VioAdvisor 复用的 TVIR 实现已接入 `src/tvir/`。本次仅移植、清理注释和格式化，保留原有运行逻辑；原始功能代码归档在 `legacy2/`。`docs/`、`legacy2/` 和验证产物均不纳入 Git。
+
 建议先阅读 [代码探索记录](C:/Users/anwen/Desktop/tv-guider/docs/notes/2026-09-24-codegraph-exploration.md)，了解已经实现的能力、未完成部分及验证范围。
 
 方法由 TVIR 构建、RAG 知识库构建与检索、根因分析、修复结果生成四个核心模块组成，输入是 RTL 代码与对应的 STA 时序报告。详见 [方法模块与关系](C:/Users/anwen/Desktop/tv-guider/docs/spec/method-modules.md)。基础版覆盖 setup、hold，暂不纳入 CDC；先实现独立的 RAG 知识库构建与检索，后续生成类模型优先使用 DeepSeek。项目术语见 [CONTEXT.md](C:/Users/anwen/Desktop/tv-guider/CONTEXT.md)。
@@ -51,6 +53,14 @@ for hit in response.results:
 
 构建产物位于 `artifacts/rag/kb/generations/`，`current.json` 指向当前成功版本；模型和 `artifacts/` 均不进入 Git。旧的成功版本暂时保留，本版不提供历史版本查询或并发服务。
 
+## 使用 TVIR
+
+入口是 `tvir.api.build_tvir_dicts_from_vivado_report_and_rtl(report_text, rtl_text)`，接收 Vivado 报告文本和对应 RTL 文本，返回 TVIR 字典列表。默认仅处理负 slack 路径；`only_violations=False` 可包含非违例路径。当前没有新增 CLI，也未接入根因分析、RAG 或修复生成。
+
+Python 依赖包含 `pyverilog==1.3.0`，同时要求系统 PATH 可找到 Icarus Verilog 的 `iverilog`。现有 `TVGuider` Conda 环境已完成依赖安装。Pyverilog 会在运行目录生成解析器文件，验证时使用临时工作目录。
+
+已使用 `code_and_xdc` 中三个已有 setup 案例确认迁移前后输出一致，但发现运算链、表达式定位、端口路径建模和缺失报告字段处理的问题；还未完成真实 hold 违例验证，因此当前不代表 TVIR 语义验收通过。输入来源、结果和待修问题见 [TVIR 迁移验证记录](C:/Users/anwen/Desktop/tv-guider/docs/notes/tvir-import-validation.md)。
+
 ## 验证与评估
 
 ```powershell
@@ -63,5 +73,7 @@ conda run -n TVGuider python -m rag.evaluate --kb artifacts/rag/kb --dataset eva
 ```
 
 默认测试不运行模型组；显式 `-m model` 会实际加载本地模型，缺模型会失败。评估输出 `report.json`（逐题 Top-5 和配置）及 `report.md`；验收未达标退出码为 2，输入或运行错误为 1。
+
+TVIR 移植保留了旧代码的 lint 问题，因此上面的全项目 `ruff check` 当前未通过；`ruff check src/rag tests scripts` 与全项目格式检查通过。具体检查结果记录在 TVIR 迁移验证记录中。
 
 开发集 8 问与验收集 20 问分开保存，manifest 固定其用途及 SHA-256。验收要求 hybrid 总体至少 16/20，setup 和 hold 分别至少 8/10。不能使用验收集调参后仍将其作为独立验收；资料变更后的评估需重新审阅标签并显式更新冻结记录。
