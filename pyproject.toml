@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tv-guider"
+version = "0.1.0"
+description = "Local setup and hold timing knowledge retrieval"
+requires-python = ">=3.12"
+dependencies = [
+  "markdown-it-py>=3,<5", "PyYAML>=6,<7", "pysbd==0.3.4",
+  "sentence-transformers>=5,<6", "transformers>=4.51,<5",
+  "torch>=2.7,<3", "qdrant-client>=1.14,<2", "rank-bm25==0.2.2",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8,<10", "ruff>=0.12,<1"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-m 'not model and not evaluation'"
+markers = ["model: requires the real local Qwen model", "evaluation: retrieval quality evaluation"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
