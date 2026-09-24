@@ -61,6 +61,19 @@ Python 依赖包含 `pyverilog==1.3.0`，同时要求系统 PATH 可找到 Icaru
 
 已使用 `code_and_xdc` 中三个已有 setup 案例确认迁移前后输出一致，但发现运算链、表达式定位、端口路径建模和缺失报告字段处理的问题；还未完成真实 hold 违例验证，因此当前不代表 TVIR 语义验收通过。输入来源、结果和待修问题见 [TVIR 迁移验证记录](C:/Users/anwen/Desktop/tv-guider/docs/notes/tvir-import-validation.md)。
 
+## 提示词构建
+
+`src/prompts/` 集中管理根因分析和修复建议的提示词，提供 `build_root_cause_prompt(llm_context, language="en")` 与 `build_repair_prompt(llm_context, language="en", allow_custom_strategy=True)` 两个函数，语言等选项为关键字参数。它们接收业务模块准备的可 JSON 序列化上下文并返回字符串，不执行检索或模型调用，也不解析模型响应。
+
+```python
+from prompts import build_repair_prompt, build_root_cause_prompt
+
+diagnosis_prompt = build_root_cause_prompt(diagnosis_context)
+repair_prompt = build_repair_prompt(repair_context, allow_custom_strategy=False)
+```
+
+本次保留旧版中英文模板内容，尚未迁移 `legacy2/root_cause` 和 `legacy2/repair` 的调用方；后续迁移时改为调用上述函数。RAG 上下文接入和完整 RTL 输出要求尚未加入模板，当前 repair 模板仍用于生成修复建议。
+
 ## 验证与评估
 
 ```powershell
