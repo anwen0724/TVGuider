@@ -1,0 +1,5168 @@
+{
+  "build_id": "016dd2ea0d074826aa4da57b2201dbcd",
+  "created_at": "2026-09-24T13:07:47.343723+00:00",
+  "dataset": {
+    "path": "evaluation/rag/acceptance.jsonl",
+    "purpose": "acceptance",
+    "sha256": "002b4479877f140adbf33110b1d5dfcee51b21b0388f19cbc590b32948b4fe48",
+    "count": 20,
+    "topics": {
+      "setup": 10,
+      "hold": 10
+    }
+  },
+  "manifest_sha256": "5bd81f30e1783d4869929bc629c236007e86ad0441617ae0acfe8aa8c0aa64d2",
+  "build_config": {
+    "model_path": "C:/all/tools/llm/models/Qwen3-Embedding-0.6B",
+    "revision": "97b0c614be4d77ee51c0cef4e5f07c00f9eb65b3",
+    "model_id": "Qwen/Qwen3-Embedding-0.6B",
+    "dimension": 1024,
+    "max_tokens": 1024,
+    "overlap_tokens": 128,
+    "device": "cuda",
+    "dtype": "float32",
+    "batch_size": 8
+  },
+  "embedding": {
+    "adapter": "qwen-sentence-transformers-v1",
+    "model_id": "Qwen/Qwen3-Embedding-0.6B",
+    "revision": "97b0c614be4d77ee51c0cef4e5f07c00f9eb65b3",
+    "dimension": 1024,
+    "dtype": "float32",
+    "device": "cuda",
+    "normalize": true,
+    "distance": "cosine",
+    "query_prompt": "Instruct: Given a web search query, retrieve relevant passages that answer the query\nQuery:",
+    "document_prompt": "",
+    "model_files": {
+      "1_Pooling/config.json": "37bf193fa101f19101bfad9c31d3eb0f786e247b7b1e5cb7f007d730eed1ddbd",
+      "config.json": "b5bf1f51fc45be473a54718cef92448d90a1be001bf9b9a44b8c7f10a19feaa9",
+      "config_sentence_transformers.json": "10667c72ddb772627bf1780cb7f86af8e2ae0032b8c243c731172064105c6961",
+      "generation_config.json": "28396d421a2108acce96383f6a7de78008f7f1b17f807958f3c14c51dbfb65fb",
+      "merges.txt": "8831e4f1a044471340f7c0a83d7bd71306a5b867e95fd870f74d0c5308a904d5",
+      "model.safetensors": "0437e45c94563b09e13cb7a64478fc406947a93cb34a7e05870fc8dcd48e23fd",
+      "modules.json": "84e40c8e006c9b1d6c122e02cba9b02458120b5fb0c87b746c41e0207cf642cf",
+      "tokenizer.json": "def76fb086971c7867b829c23a26261e38d9d74e02139253b38aeb9df8b4b50a",
+      "tokenizer_config.json": "253153d0738ceb4c668d2eff957714dd2bea0b56de772a9fdccd96cbf517e6a0",
+      "vocab.json": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910"
+    },
+    "packages": {
+      "torch": "2.11.0+cu128",
+      "transformers": "4.57.6",
+      "sentence-transformers": "5.1.2",
+      "tokenizers": "0.22.2"
+    }
+  },
+  "runtime": {
+    "qdrant-client": "1.19.1",
+    "rank-bm25": "0.2.2",
+    "markdown-it-py": "4.2.0",
+    "pysbd": "0.3.4",
+    "PyYAML": "6.0.3"
+  },
+  "retrieval": {
+    "top_k": 5,
+    "candidate_k": 20,
+    "rrf_k": 60
+  },
+  "modes": {
+    "dense": {
+      "overall": {
+        "count": 20,
+        "hits": 19,
+        "hit_rate_at_5": 0.95
+      },
+      "setup": {
+        "count": 10,
+        "hits": 10,
+        "hit_rate_at_5": 1.0
+      },
+      "hold": {
+        "count": 10,
+        "hits": 9,
+        "hit_rate_at_5": 0.9
+      },
+      "queries": [
+        {
+          "id": "acceptance-01",
+          "topic": "setup",
+          "query": "A critical stage contains several serial arithmetic operations while the next stage is almost empty. How should I investigate the imbalance?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "f613d278-be49-5d4e-83a5-1f30daefb38d",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Deep logic and unbalanced combinational stages"
+              ],
+              "body_spans": [
+                [
+                  17,
+                  17
+                ]
+              ],
+              "score": 0.5803385806354315
+            },
+            {
+              "chunk_id": "2bd92509-a1d5-5cc7-be31-e3b08f9c16f3",
+              "document_id": "setup-repair",
+              "heading_path": [
+                "Setup Repair Strategies and Preconditions",
+                "Pipeline only with an accepted latency contract"
+              ],
+              "body_spans": [
+                [
+                  17,
+                  17
+                ]
+              ],
+              "score": 0.482936646331811
+            },
+            {
+              "chunk_id": "c44db87d-bf20-514f-b40a-91de3088d26c",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Resource cost and setup versus hold interaction"
+              ],
+              "body_spans": [
+                [
+                  26,
+                  28
+                ]
+              ],
+              "score": 0.4758463500391322
+            },
+            {
+              "chunk_id": "99a71dd9-e407-5dc1-8473-807a5f3d01d4",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Dedicated block and inference bottlenecks"
+              ],
+              "body_spans": [
+                [
+                  21,
+                  21
+                ]
+              ],
+              "score": 0.45768572280589115
+            },
+            {
+              "chunk_id": "fc74cfe7-2126-5d8b-bad7-376d61090b3f",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Resource cost and setup versus hold interaction"
+              ],
+              "body_spans": [
+                [
+                  32,
+                  34
+                ]
+              ],
+              "score": 0.43866972977665974
+            }
+          ]
+        },
+        {
+          "id": "acceptance-02",
+          "topic": "setup",
+          "query": "The failing path has only two LUTs but most of its delay is interconnect. What placement and routing factors should I inspect?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "fd7b1a2f-30c1-53b6-a979-466f4e9505db",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Routing, fanout, and placement restrictions"
+              ],
+              "body_spans": [
+                [
+                  25,
+                  25
+                ]
+              ],
+              "score": 0.7073491864927648
+            },
+            {
+              "chunk_id": "bce38fb1-a231-51e1-afdc-6db147a8a65d",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Setup regression after routing"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 0.5812542800056429
+            },
+            {
+              "chunk_id": "c44db87d-bf20-514f-b40a-91de3088d26c",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Resource cost and setup versus hold interaction"
+              ],
+              "body_spans": [
+                [
+                  26,
+                  28
+                ]
+              ],
+              "score": 0.5693862129796832
+            },
+            {
+              "chunk_id": "2aeaca18-9687-551b-9b35-5263b9baec89",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Recheck both delay directions and all required corners"
+              ],
+              "body_spans": [
+                [
+                  18,
+                  18
+                ]
+              ],
+              "score": 0.5498173925475568
+            },
+            {
+              "chunk_id": "99a71dd9-e407-5dc1-8473-807a5f3d01d4",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Dedicated block and inference bottlenecks"
+              ],
+              "body_spans": [
+                [
+                  21,
+                  21
+                ]
+              ],
+              "score": 0.5245682422213948
+            }
+          ]
+        },
+        {
+          "id": "acceptance-03",
+          "topic": "setup",
+          "query": "The critical path begins at an unregistered block RAM output. What should I check in the synthesized design?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "99a71dd9-e407-5dc1-8473-807a5f3d01d4",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Dedicated block and inference bottlenecks"
+              ],
+              "body_spans": [
+                [
+                  21,
+                  21
+                ]
+              ],
+              "score": 0.6304078572016816
+            },
+            {
+              "chunk_id": "fd7b1a2f-30c1-53b6-a979-466f4e9505db",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Routing, fanout, and placement restrictions"
+              ],
+              "body_spans": [
+                [
+                  25,
+                  25
+                ]
+              ],
+              "score": 0.5656410133818424
+            },
+            {
+              "chunk_id": "bce38fb1-a231-51e1-afdc-6db147a8a65d",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Setup regression after routing"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 0.5581997177406345
+            },
+            {
+              "chunk_id": "2e188394-e413-50f3-a391-94eaa60b808e",
+              "document_id": "setup-repair",
+              "heading_path": [
+                "Setup Repair Strategies and Preconditions",
+                "Retiming and dedicated register resources"
+              ],
+              "body_spans": [
+                [
+                  21,
+                  21
+                ]
+              ],
+              "score": 0.5316636532979894
+            },
+            {
+              "chunk_id": "f613d278-be49-5d4e-83a5-1f30daefb38d",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Deep logic and unbalanced combinational stages"
+              ],
+              "body_spans": [
+                [
+                  17,
+                  17
+                ]
+              ],
+              "score": 0.5006940520012666
+            }
+          ]
+        },
+        {
+          "id": "acceptance-04",
+          "topic": "setup",
+          "query": "Timing met the setup target after placement, then failed after route when hold was repaired. Which report evidence can explain this?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "bce38fb1-a231-51e1-afdc-6db147a8a65d",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Setup regression after routing"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 0.699058744551176
+            },
+            {
+              "chunk_id": "6c0673e6-190e-5b25-b8a1-0853a21a7cd4",
+              "document_id": "hold-diagnosis",
+              "heading_path": [
+                "Diagnosing Hold Timing Violations",
+                "Unexpected hold requirement after a multicycle exception"
+              ],
+              "body_spans": [
+                [
+                  26,
+                  26
+                ]
+              ],
+              "score": 0.6279442436234545
+            },
+            {
+              "chunk_id": "c44db87d-bf20-514f-b40a-91de3088d26c",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Resource cost and setup versus hold interaction"
+              ],
+              "body_spans": [
+                [
+                  26,
+                  28
+                ]
+              ],
+              "score": 0.6220749016169953
+            },
+            {
+              "chunk_id": "2aeaca18-9687-551b-9b35-5263b9baec89",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Recheck both delay directions and all required corners"
+              ],
+              "body_spans": [
+                [
+                  18,
+                  18
+                ]
+              ],
+              "score": 0.6088986561759372
+            },
+            {
+              "chunk_id": "363a90e8-9548-5c24-beb8-0df4351b665e",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "ASIC delay insertion after clock tree synthesis"
+              ],
+              "body_spans": [
+                [
+                  17,
+                  17
+                ]
+              ],
+              "score": 0.5993537631050807
+            }
+          ]
+        },
+        {
+          "id": "acceptance-05",
+          "topic": "setup",
+          "query": "I want to split a datapath with a new register, but the interface expects data_valid on a fixed cycle. What must be agreed before this repair?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "2bd92509-a1d5-5cc7-be31-e3b08f9c16f3",
+              "document_id": "setup-repair",
+              "heading_path": [
+                "Setup Repair Strategies and Preconditions",
+                "Pipeline only with an accepted latency contract"
+              ],
+              "body_spans": [
+                [
+                  17,
+                  17
+                ]
+              ],
+              "score": 0.7193397552470666
+            },
+            {
+              "chunk_id": "eade761e-cdb2-5ae0-86fc-da4ec375dee5",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Preserve functional timing when adding latency"
+              ],
+              "body_spans": [
+                [
+                  22,
+                  22
+                ]
+              ],
+              "score": 0.5810117519149063
+            },
+            {
+              "chunk_id": "dae7c739-ded4-5f0f-8cc3-4a65df56d9a0",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "Register insertion needs a sequential behavior review"
+              ],
+              "body_spans": [
+                [
+                  33,
+                  33
+                ]
+              ],
+              "score": 0.5551777582644033
+            },
+            {
+              "chunk_id": "1f85d774-ae2b-5fd0-9ae8-d12a45ce4922",
+              "document_id": "setup-repair",
+              "heading_path": [
+                "Setup Repair Strategies and Preconditions",
+                "Multicycle constraints require real functional intent"
+              ],
+              "body_spans": [
+                [
+                  33,
+                  33
+                ]
+              ],
+              "score": 0.5539547717436333
+            },
+            {
+              "chunk_id": "fc74cfe7-2126-5d8b-bad7-376d61090b3f",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Resource cost and setup versus hold interaction"
+              ],
+              "body_spans": [
+                [
+                  32,
+                  34
+                ]
+              ],
+              "score": 0.5183761942068055
+            }
+          ]
+        },
+        {
+          "id": "acceptance-06",
+          "topic": "setup",
+          "query": "One synchronous control register drives many distant loads. How can replication help and why avoid a global fanout threshold?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "83d962ee-ac78-55fe-8e43-b92de30f39ee",
+              "document_id": "setup-repair",
+              "heading_path": [
+                "Setup Repair Strategies and Preconditions",
+                "Replicate a timing-critical high-fanout driver"
+              ],
+              "body_spans": [
+                [
+                  25,
+                  25
+                ]
+              ],
+              "score": 0.6962762650983858
+            },
+            {
+              "chunk_id": "dae7c739-ded4-5f0f-8cc3-4a65df56d9a0",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "Register insertion needs a sequential behavior review"
+              ],
+              "body_spans": [
+                [
+                  33,
+                  33
+                ]
+              ],
+              "score": 0.37461086542282973
+            },
+            {
+              "chunk_id": "2bd92509-a1d5-5cc7-be31-e3b08f9c16f3",
+              "document_id": "setup-repair",
+              "heading_path": [
+                "Setup Repair Strategies and Preconditions",
+                "Pipeline only with an accepted latency contract"
+              ],
+              "body_spans": [
+                [
+                  17,
+                  17
+                ]
+              ],
+              "score": 0.37275129204361024
+            },
+            {
+              "chunk_id": "2e188394-e413-50f3-a391-94eaa60b808e",
+              "document_id": "setup-repair",
+              "heading_path": [
+                "Setup Repair Strategies and Preconditions",
+                "Retiming and dedicated register resources"
+              ],
+              "body_spans": [
+                [
+                  21,
+                  21
+                ]
+              ],
+              "score": 0.36733022464151166
+            },
+            {
+              "chunk_id": "fd7b1a2f-30c1-53b6-a979-466f4e9505db",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Routing, fanout, and placement restrictions"
+              ],
+              "body_spans": [
+                [
+                  25,
+                  25
+                ]
+              ],
+              "score": 0.36064016998937387
+            }
+          ]
+        },
+        {
+          "id": "acceptance-07",
+          "topic": "setup",
+          "query": "Which technology-mapped optimization choices can OpenROAD use on an ASIC path that misses setup?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "a576aea9-1f7e-5d86-9f22-da499776dd77",
+              "document_id": "setup-repair",
+              "heading_path": [
+                "Setup Repair Strategies and Preconditions",
+                "ASIC cell and load optimization"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 0.6545875172395162
+            },
+            {
+              "chunk_id": "363a90e8-9548-5c24-beb8-0df4351b665e",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "ASIC delay insertion after clock tree synthesis"
+              ],
+              "body_spans": [
+                [
+                  17,
+                  17
+                ]
+              ],
+              "score": 0.5765672590589069
+            },
+            {
+              "chunk_id": "c44db87d-bf20-514f-b40a-91de3088d26c",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Resource cost and setup versus hold interaction"
+              ],
+              "body_spans": [
+                [
+                  26,
+                  28
+                ]
+              ],
+              "score": 0.5445340169832231
+            },
+            {
+              "chunk_id": "fd7b1a2f-30c1-53b6-a979-466f4e9505db",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Routing, fanout, and placement restrictions"
+              ],
+              "body_spans": [
+                [
+                  25,
+                  25
+                ]
+              ],
+              "score": 0.5440259947014197
+            },
+            {
+              "chunk_id": "b5bd5ca6-dbda-5145-8a7e-44dded080746",
+              "document_id": "timing-fundamentals",
+              "heading_path": [
+                "Timing Fundamentals for Setup and Hold",
+                "STA evidence includes more than RTL"
+              ],
+              "body_spans": [
+                [
+                  47,
+                  47
+                ]
+              ],
+              "score": 0.5256467217362786
+            }
+          ]
+        },
+        {
+          "id": "acceptance-08",
+          "topic": "setup",
+          "query": "Is a multicycle exception a valid way to remove a setup failure when the endpoint still samples every cycle?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "1f85d774-ae2b-5fd0-9ae8-d12a45ce4922",
+              "document_id": "setup-repair",
+              "heading_path": [
+                "Setup Repair Strategies and Preconditions",
+                "Multicycle constraints require real functional intent"
+              ],
+              "body_spans": [
+                [
+                  33,
+                  33
+                ]
+              ],
+              "score": 0.7244956535037832
+            },
+            {
+              "chunk_id": "6c0673e6-190e-5b25-b8a1-0853a21a7cd4",
+              "document_id": "hold-diagnosis",
+              "heading_path": [
+                "Diagnosing Hold Timing Violations",
+                "Unexpected hold requirement after a multicycle exception"
+              ],
+              "body_spans": [
+                [
+                  26,
+                  26
+                ]
+              ],
+              "score": 0.6081739871533065
+            },
+            {
+              "chunk_id": "9f19187d-168e-5629-bf6c-97122b3aea75",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "Correct an erroneous hold relationship"
+              ],
+              "body_spans": [
+                [
+                  25,
+                  25
+                ]
+              ],
+              "score": 0.5434487947840234
+            },
+            {
+              "chunk_id": "2bd92509-a1d5-5cc7-be31-e3b08f9c16f3",
+              "document_id": "setup-repair",
+              "heading_path": [
+                "Setup Repair Strategies and Preconditions",
+                "Pipeline only with an accepted latency contract"
+              ],
+              "body_spans": [
+                [
+                  17,
+                  17
+                ]
+              ],
+              "score": 0.5156404545513329
+            },
+            {
+              "chunk_id": "5b6a8278-df3e-537c-8061-f4982f86e50f",
+              "document_id": "timing-fundamentals",
+              "heading_path": [
+                "Timing Fundamentals for Setup and Hold",
+                "Setup checks limit late data"
+              ],
+              "body_spans": [
+                [
+                  17,
+                  17
+                ]
+              ],
+              "score": 0.48789137342595684
+            }
+          ]
+        },
+        {
+          "id": "acceptance-09",
+          "topic": "setup",
+          "query": "Can existing registers be moved across combinational logic to redistribute stage delay, and what behavior needs checking?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "2e188394-e413-50f3-a391-94eaa60b808e",
+              "document_id": "setup-repair",
+              "heading_path": [
+                "Setup Repair Strategies and Preconditions",
+                "Retiming and dedicated register resources"
+              ],
+              "body_spans": [
+                [
+                  21,
+                  21
+                ]
+              ],
+              "score": 0.6574564134962693
+            },
+            {
+              "chunk_id": "2bd92509-a1d5-5cc7-be31-e3b08f9c16f3",
+              "document_id": "setup-repair",
+              "heading_path": [
+                "Setup Repair Strategies and Preconditions",
+                "Pipeline only with an accepted latency contract"
+              ],
+              "body_spans": [
+                [
+                  17,
+                  17
+                ]
+              ],
+              "score": 0.5779351574260314
+            },
+            {
+              "chunk_id": "f613d278-be49-5d4e-83a5-1f30daefb38d",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Deep logic and unbalanced combinational stages"
+              ],
+              "body_spans": [
+                [
+                  17,
+                  17
+                ]
+              ],
+              "score": 0.5525026096342611
+            },
+            {
+              "chunk_id": "fc74cfe7-2126-5d8b-bad7-376d61090b3f",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Resource cost and setup versus hold interaction"
+              ],
+              "body_spans": [
+                [
+                  32,
+                  34
+                ]
+              ],
+              "score": 0.522429013783513
+            },
+            {
+              "chunk_id": "c44db87d-bf20-514f-b40a-91de3088d26c",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Resource cost and setup versus hold interaction"
+              ],
+              "body_spans": [
+                [
+                  26,
+                  28
+                ]
+              ],
+              "score": 0.5157696488205508
+            }
+          ]
+        },
+        {
+          "id": "acceptance-10",
+          "topic": "setup",
+          "query": "A revised RTL design synthesizes successfully and simulates correctly. What implementation evidence is still needed for timing signoff?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "215d0091-a056-50b5-aa18-5a3370533d75",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Signoff uses implemented timing evidence"
+              ],
+              "body_spans": [
+                [
+                  40,
+                  40
+                ]
+              ],
+              "score": 0.7130604331561354
+            },
+            {
+              "chunk_id": "b5bd5ca6-dbda-5145-8a7e-44dded080746",
+              "document_id": "timing-fundamentals",
+              "heading_path": [
+                "Timing Fundamentals for Setup and Hold",
+                "STA evidence includes more than RTL"
+              ],
+              "body_spans": [
+                [
+                  47,
+                  47
+                ]
+              ],
+              "score": 0.6619445291882251
+            },
+            {
+              "chunk_id": "eade761e-cdb2-5ae0-86fc-da4ec375dee5",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Preserve functional timing when adding latency"
+              ],
+              "body_spans": [
+                [
+                  22,
+                  22
+                ]
+              ],
+              "score": 0.5917383553594875
+            },
+            {
+              "chunk_id": "e11e5379-c6d7-5411-8a5c-402f990f4bd8",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Reproduce an ASIC timing comparison"
+              ],
+              "body_spans": [
+                [
+                  44,
+                  44
+                ]
+              ],
+              "score": 0.5757552272149027
+            },
+            {
+              "chunk_id": "2e188394-e413-50f3-a391-94eaa60b808e",
+              "document_id": "setup-repair",
+              "heading_path": [
+                "Setup Repair Strategies and Preconditions",
+                "Retiming and dedicated register resources"
+              ],
+              "body_spans": [
+                [
+                  21,
+                  21
+                ]
+              ],
+              "score": 0.5638897056490768
+            }
+          ]
+        },
+        {
+          "id": "acceptance-11",
+          "topic": "hold",
+          "query": "A direct connection between two registers has excellent setup slack but negative minimum slack. How can so little logic be a problem?",
+          "hit": false,
+          "first_relevant_rank": null,
+          "results": [
+            {
+              "chunk_id": "5b6a8278-df3e-537c-8061-f4982f86e50f",
+              "document_id": "timing-fundamentals",
+              "heading_path": [
+                "Timing Fundamentals for Setup and Hold",
+                "Setup checks limit late data"
+              ],
+              "body_spans": [
+                [
+                  17,
+                  17
+                ]
+              ],
+              "score": 0.527196841292763
+            },
+            {
+              "chunk_id": "fd7b1a2f-30c1-53b6-a979-466f4e9505db",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Routing, fanout, and placement restrictions"
+              ],
+              "body_spans": [
+                [
+                  25,
+                  25
+                ]
+              ],
+              "score": 0.5103399357338165
+            },
+            {
+              "chunk_id": "bca2965e-8068-57c3-a0f7-c332b467ce16",
+              "document_id": "timing-fundamentals",
+              "heading_path": [
+                "Timing Fundamentals for Setup and Hold",
+                "Setup checks limit late data"
+              ],
+              "body_spans": [
+                [
+                  20,
+                  22
+                ]
+              ],
+              "score": 0.49094727749105993
+            },
+            {
+              "chunk_id": "99a71dd9-e407-5dc1-8473-807a5f3d01d4",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Dedicated block and inference bottlenecks"
+              ],
+              "body_spans": [
+                [
+                  21,
+                  21
+                ]
+              ],
+              "score": 0.49078177179531457
+            },
+            {
+              "chunk_id": "2aeaca18-9687-551b-9b35-5263b9baec89",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Recheck both delay directions and all required corners"
+              ],
+              "body_spans": [
+                [
+                  18,
+                  18
+                ]
+              ],
+              "score": 0.48784211395268495
+            }
+          ]
+        },
+        {
+          "id": "acceptance-12",
+          "topic": "hold",
+          "query": "The receiving register clock arrives substantially later than the launching clock. Why does that hurt a same-edge hold check?",
+          "hit": true,
+          "first_relevant_rank": 2,
+          "results": [
+            {
+              "chunk_id": "fe3e5cae-f2e6-5aff-95fc-7b7a2178be85",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "Why lowering frequency usually does not fix same-edge hold"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 0.6669237605688467
+            },
+            {
+              "chunk_id": "55e2ea67-6862-52ab-b380-9ab9a34bdeb7",
+              "document_id": "hold-diagnosis",
+              "heading_path": [
+                "Diagnosing Hold Timing Violations",
+                "Late capture clock and excessive skew"
+              ],
+              "body_spans": [
+                [
+                  22,
+                  22
+                ]
+              ],
+              "score": 0.6652729043334442
+            },
+            {
+              "chunk_id": "990ca62e-ef2f-5e2f-8a35-60015ed74b5c",
+              "document_id": "timing-fundamentals",
+              "heading_path": [
+                "Timing Fundamentals for Setup and Hold",
+                "Hold checks limit early data"
+              ],
+              "body_spans": [
+                [
+                  32,
+                  34
+                ]
+              ],
+              "score": 0.6314396023779029
+            },
+            {
+              "chunk_id": "a4315b6d-19b9-5eaf-b593-c1f6fdf0a54b",
+              "document_id": "timing-fundamentals",
+              "heading_path": [
+                "Timing Fundamentals for Setup and Hold",
+                "Hold checks limit early data"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 0.6310708375606395
+            },
+            {
+              "chunk_id": "5b6a8278-df3e-537c-8061-f4982f86e50f",
+              "document_id": "timing-fundamentals",
+              "heading_path": [
+                "Timing Fundamentals for Setup and Hold",
+                "Setup checks limit late data"
+              ],
+              "body_spans": [
+                [
+                  17,
+                  17
+                ]
+              ],
+              "score": 0.6031020233697708
+            }
+          ]
+        },
+        {
+          "id": "acceptance-13",
+          "topic": "hold",
+          "query": "After adding a setup multicycle constraint, the minimum-delay requirement became unexpectedly large. What should be reviewed first?",
+          "hit": true,
+          "first_relevant_rank": 2,
+          "results": [
+            {
+              "chunk_id": "1f85d774-ae2b-5fd0-9ae8-d12a45ce4922",
+              "document_id": "setup-repair",
+              "heading_path": [
+                "Setup Repair Strategies and Preconditions",
+                "Multicycle constraints require real functional intent"
+              ],
+              "body_spans": [
+                [
+                  33,
+                  33
+                ]
+              ],
+              "score": 0.6836595147543807
+            },
+            {
+              "chunk_id": "6c0673e6-190e-5b25-b8a1-0853a21a7cd4",
+              "document_id": "hold-diagnosis",
+              "heading_path": [
+                "Diagnosing Hold Timing Violations",
+                "Unexpected hold requirement after a multicycle exception"
+              ],
+              "body_spans": [
+                [
+                  26,
+                  26
+                ]
+              ],
+              "score": 0.6797267828145748
+            },
+            {
+              "chunk_id": "fc74cfe7-2126-5d8b-bad7-376d61090b3f",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Resource cost and setup versus hold interaction"
+              ],
+              "body_spans": [
+                [
+                  32,
+                  34
+                ]
+              ],
+              "score": 0.6607486844548908
+            },
+            {
+              "chunk_id": "2aeaca18-9687-551b-9b35-5263b9baec89",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Recheck both delay directions and all required corners"
+              ],
+              "body_spans": [
+                [
+                  18,
+                  18
+                ]
+              ],
+              "score": 0.6364092921126925
+            },
+            {
+              "chunk_id": "bce38fb1-a231-51e1-afdc-6db147a8a65d",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Setup regression after routing"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 0.6081101950904307
+            }
+          ]
+        },
+        {
+          "id": "acceptance-14",
+          "topic": "hold",
+          "query": "An FPGA input-to-register hold check fails. How do external chip and board arrival assumptions enter the investigation?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "266cf168-5d8e-572d-8f58-833c7a3ffcce",
+              "document_id": "hold-diagnosis",
+              "heading_path": [
+                "Diagnosing Hold Timing Violations",
+                "Input interface and board timing assumptions"
+              ],
+              "body_spans": [
+                [
+                  34,
+                  36
+                ]
+              ],
+              "score": 0.7856752880915695
+            },
+            {
+              "chunk_id": "bce38fb1-a231-51e1-afdc-6db147a8a65d",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Setup regression after routing"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 0.618632898979051
+            },
+            {
+              "chunk_id": "c44db87d-bf20-514f-b40a-91de3088d26c",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Resource cost and setup versus hold interaction"
+              ],
+              "body_spans": [
+                [
+                  26,
+                  28
+                ]
+              ],
+              "score": 0.5902172556308563
+            },
+            {
+              "chunk_id": "6c0673e6-190e-5b25-b8a1-0853a21a7cd4",
+              "document_id": "hold-diagnosis",
+              "heading_path": [
+                "Diagnosing Hold Timing Violations",
+                "Unexpected hold requirement after a multicycle exception"
+              ],
+              "body_spans": [
+                [
+                  26,
+                  26
+                ]
+              ],
+              "score": 0.5718083469411233
+            },
+            {
+              "chunk_id": "5aad3a06-3b01-508e-bad4-db6cd17acb2a",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "FPGA physical hold optimization"
+              ],
+              "body_spans": [
+                [
+                  21,
+                  21
+                ]
+              ],
+              "score": 0.5712592870957619
+            }
+          ]
+        },
+        {
+          "id": "acceptance-15",
+          "topic": "hold",
+          "query": "How should I investigate the user margin and calculated variation appearing in a Vivado hold report?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "b8cf1ca8-e101-5eb7-84cb-9ec8f4bdf96e",
+              "document_id": "hold-diagnosis",
+              "heading_path": [
+                "Diagnosing Hold Timing Violations",
+                "Uncertainty in the actual hold report"
+              ],
+              "body_spans": [
+                [
+                  30,
+                  30
+                ]
+              ],
+              "score": 0.7016109292100361
+            },
+            {
+              "chunk_id": "bce38fb1-a231-51e1-afdc-6db147a8a65d",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Setup regression after routing"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 0.5971101668760466
+            },
+            {
+              "chunk_id": "d3573e22-bfa5-526c-b5c2-4b081c3578d2",
+              "document_id": "hold-diagnosis",
+              "heading_path": [
+                "Diagnosing Hold Timing Violations",
+                "Short paths and earliest arrival"
+              ],
+              "body_spans": [
+                [
+                  18,
+                  18
+                ]
+              ],
+              "score": 0.5624650248087619
+            },
+            {
+              "chunk_id": "6c0673e6-190e-5b25-b8a1-0853a21a7cd4",
+              "document_id": "hold-diagnosis",
+              "heading_path": [
+                "Diagnosing Hold Timing Violations",
+                "Unexpected hold requirement after a multicycle exception"
+              ],
+              "body_spans": [
+                [
+                  26,
+                  26
+                ]
+              ],
+              "score": 0.5621827900334806
+            },
+            {
+              "chunk_id": "34eda5f6-2421-5b3b-8ccd-bc2217352133",
+              "document_id": "timing-fundamentals",
+              "heading_path": [
+                "Timing Fundamentals for Setup and Hold",
+                "Hold checks limit early data"
+              ],
+              "body_spans": [
+                [
+                  37,
+                  37
+                ]
+              ],
+              "score": 0.5596160935592247
+            }
+          ]
+        },
+        {
+          "id": "acceptance-16",
+          "topic": "hold",
+          "query": "When should OpenROAD insert hold buffers, and how does it avoid breaking setup while doing so?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "363a90e8-9548-5c24-beb8-0df4351b665e",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "ASIC delay insertion after clock tree synthesis"
+              ],
+              "body_spans": [
+                [
+                  17,
+                  17
+                ]
+              ],
+              "score": 0.6830794328767205
+            },
+            {
+              "chunk_id": "dae7c739-ded4-5f0f-8cc3-4a65df56d9a0",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "Register insertion needs a sequential behavior review"
+              ],
+              "body_spans": [
+                [
+                  33,
+                  33
+                ]
+              ],
+              "score": 0.5703359743441085
+            },
+            {
+              "chunk_id": "a576aea9-1f7e-5d86-9f22-da499776dd77",
+              "document_id": "setup-repair",
+              "heading_path": [
+                "Setup Repair Strategies and Preconditions",
+                "ASIC cell and load optimization"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 0.5514378625812295
+            },
+            {
+              "chunk_id": "5aad3a06-3b01-508e-bad4-db6cd17acb2a",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "FPGA physical hold optimization"
+              ],
+              "body_spans": [
+                [
+                  21,
+                  21
+                ]
+              ],
+              "score": 0.5373005310412322
+            },
+            {
+              "chunk_id": "c44db87d-bf20-514f-b40a-91de3088d26c",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Resource cost and setup versus hold interaction"
+              ],
+              "body_spans": [
+                [
+                  26,
+                  28
+                ]
+              ],
+              "score": 0.502726227027771
+            }
+          ]
+        },
+        {
+          "id": "acceptance-17",
+          "topic": "hold",
+          "query": "What Vivado physical optimization options add LUT1 delay to severe hold paths before routing?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "5aad3a06-3b01-508e-bad4-db6cd17acb2a",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "FPGA physical hold optimization"
+              ],
+              "body_spans": [
+                [
+                  21,
+                  21
+                ]
+              ],
+              "score": 0.7523283661377987
+            },
+            {
+              "chunk_id": "363a90e8-9548-5c24-beb8-0df4351b665e",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "ASIC delay insertion after clock tree synthesis"
+              ],
+              "body_spans": [
+                [
+                  17,
+                  17
+                ]
+              ],
+              "score": 0.6100760672072767
+            },
+            {
+              "chunk_id": "bce38fb1-a231-51e1-afdc-6db147a8a65d",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Setup regression after routing"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 0.5974577432487883
+            },
+            {
+              "chunk_id": "d3573e22-bfa5-526c-b5c2-4b081c3578d2",
+              "document_id": "hold-diagnosis",
+              "heading_path": [
+                "Diagnosing Hold Timing Violations",
+                "Short paths and earliest arrival"
+              ],
+              "body_spans": [
+                [
+                  18,
+                  18
+                ]
+              ],
+              "score": 0.597442307163551
+            },
+            {
+              "chunk_id": "dae7c739-ded4-5f0f-8cc3-4a65df56d9a0",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "Register insertion needs a sequential behavior review"
+              ],
+              "body_spans": [
+                [
+                  33,
+                  33
+                ]
+              ],
+              "score": 0.5787432384675164
+            }
+          ]
+        },
+        {
+          "id": "acceptance-18",
+          "topic": "hold",
+          "query": "Will reducing the clock frequency repair an ordinary same-edge register hold failure?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "fe3e5cae-f2e6-5aff-95fc-7b7a2178be85",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "Why lowering frequency usually does not fix same-edge hold"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 0.7383038521828502
+            },
+            {
+              "chunk_id": "363a90e8-9548-5c24-beb8-0df4351b665e",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "ASIC delay insertion after clock tree synthesis"
+              ],
+              "body_spans": [
+                [
+                  17,
+                  17
+                ]
+              ],
+              "score": 0.6158130579942581
+            },
+            {
+              "chunk_id": "dae7c739-ded4-5f0f-8cc3-4a65df56d9a0",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "Register insertion needs a sequential behavior review"
+              ],
+              "body_spans": [
+                [
+                  33,
+                  33
+                ]
+              ],
+              "score": 0.6110195969741213
+            },
+            {
+              "chunk_id": "266cf168-5d8e-572d-8f58-833c7a3ffcce",
+              "document_id": "hold-diagnosis",
+              "heading_path": [
+                "Diagnosing Hold Timing Violations",
+                "Input interface and board timing assumptions"
+              ],
+              "body_spans": [
+                [
+                  34,
+                  36
+                ]
+              ],
+              "score": 0.5786780001009165
+            },
+            {
+              "chunk_id": "55e2ea67-6862-52ab-b380-9ab9a34bdeb7",
+              "document_id": "hold-diagnosis",
+              "heading_path": [
+                "Diagnosing Hold Timing Violations",
+                "Late capture clock and excessive skew"
+              ],
+              "body_spans": [
+                [
+                  22,
+                  22
+                ]
+              ],
+              "score": 0.5669513602769707
+            }
+          ]
+        },
+        {
+          "id": "acceptance-19",
+          "topic": "hold",
+          "query": "Why is adding an ordinary pipeline register not automatically a safe replacement for a hold buffer?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "dae7c739-ded4-5f0f-8cc3-4a65df56d9a0",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "Register insertion needs a sequential behavior review"
+              ],
+              "body_spans": [
+                [
+                  33,
+                  33
+                ]
+              ],
+              "score": 0.6869074352240214
+            },
+            {
+              "chunk_id": "363a90e8-9548-5c24-beb8-0df4351b665e",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "ASIC delay insertion after clock tree synthesis"
+              ],
+              "body_spans": [
+                [
+                  17,
+                  17
+                ]
+              ],
+              "score": 0.5443267214228663
+            },
+            {
+              "chunk_id": "c44db87d-bf20-514f-b40a-91de3088d26c",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Resource cost and setup versus hold interaction"
+              ],
+              "body_spans": [
+                [
+                  26,
+                  28
+                ]
+              ],
+              "score": 0.5289793629747781
+            },
+            {
+              "chunk_id": "9f19187d-168e-5629-bf6c-97122b3aea75",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "Correct an erroneous hold relationship"
+              ],
+              "body_spans": [
+                [
+                  25,
+                  25
+                ]
+              ],
+              "score": 0.5106372448484201
+            },
+            {
+              "chunk_id": "5aad3a06-3b01-508e-bad4-db6cd17acb2a",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "FPGA physical hold optimization"
+              ],
+              "body_spans": [
+                [
+                  21,
+                  21
+                ]
+              ],
+              "score": 0.47139314570910607
+            }
+          ]
+        },
+        {
+          "id": "acceptance-20",
+          "topic": "hold",
+          "query": "A hold fix passes at the fast corner. Is that enough, or should maximum and minimum timing be checked elsewhere too?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "2aeaca18-9687-551b-9b35-5263b9baec89",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Recheck both delay directions and all required corners"
+              ],
+              "body_spans": [
+                [
+                  18,
+                  18
+                ]
+              ],
+              "score": 0.6242861108478097
+            },
+            {
+              "chunk_id": "a4315b6d-19b9-5eaf-b593-c1f6fdf0a54b",
+              "document_id": "timing-fundamentals",
+              "heading_path": [
+                "Timing Fundamentals for Setup and Hold",
+                "Hold checks limit early data"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 0.6041876295716806
+            },
+            {
+              "chunk_id": "6c0673e6-190e-5b25-b8a1-0853a21a7cd4",
+              "document_id": "hold-diagnosis",
+              "heading_path": [
+                "Diagnosing Hold Timing Violations",
+                "Unexpected hold requirement after a multicycle exception"
+              ],
+              "body_spans": [
+                [
+                  26,
+                  26
+                ]
+              ],
+              "score": 0.5805466522114298
+            },
+            {
+              "chunk_id": "fe3e5cae-f2e6-5aff-95fc-7b7a2178be85",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "Why lowering frequency usually does not fix same-edge hold"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 0.5669222520956083
+            },
+            {
+              "chunk_id": "d3573e22-bfa5-526c-b5c2-4b081c3578d2",
+              "document_id": "hold-diagnosis",
+              "heading_path": [
+                "Diagnosing Hold Timing Violations",
+                "Short paths and earliest arrival"
+              ],
+              "body_spans": [
+                [
+                  18,
+                  18
+                ]
+              ],
+              "score": 0.5529041260861642
+            }
+          ]
+        }
+      ]
+    },
+    "bm25": {
+      "overall": {
+        "count": 20,
+        "hits": 20,
+        "hit_rate_at_5": 1.0
+      },
+      "setup": {
+        "count": 10,
+        "hits": 10,
+        "hit_rate_at_5": 1.0
+      },
+      "hold": {
+        "count": 10,
+        "hits": 10,
+        "hit_rate_at_5": 1.0
+      },
+      "queries": [
+        {
+          "id": "acceptance-01",
+          "topic": "setup",
+          "query": "A critical stage contains several serial arithmetic operations while the next stage is almost empty. How should I investigate the imbalance?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "f613d278-be49-5d4e-83a5-1f30daefb38d",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Deep logic and unbalanced combinational stages"
+              ],
+              "body_spans": [
+                [
+                  17,
+                  17
+                ]
+              ],
+              "score": 18.17835530005933
+            },
+            {
+              "chunk_id": "215d0091-a056-50b5-aa18-5a3370533d75",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Signoff uses implemented timing evidence"
+              ],
+              "body_spans": [
+                [
+                  40,
+                  40
+                ]
+              ],
+              "score": 8.924601545960481
+            },
+            {
+              "chunk_id": "2e188394-e413-50f3-a391-94eaa60b808e",
+              "document_id": "setup-repair",
+              "heading_path": [
+                "Setup Repair Strategies and Preconditions",
+                "Retiming and dedicated register resources"
+              ],
+              "body_spans": [
+                [
+                  21,
+                  21
+                ]
+              ],
+              "score": 8.287695224488528
+            },
+            {
+              "chunk_id": "fc74cfe7-2126-5d8b-bad7-376d61090b3f",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Resource cost and setup versus hold interaction"
+              ],
+              "body_spans": [
+                [
+                  32,
+                  34
+                ]
+              ],
+              "score": 8.111015487505272
+            },
+            {
+              "chunk_id": "eade761e-cdb2-5ae0-86fc-da4ec375dee5",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Preserve functional timing when adding latency"
+              ],
+              "body_spans": [
+                [
+                  22,
+                  22
+                ]
+              ],
+              "score": 7.578864429817529
+            }
+          ]
+        },
+        {
+          "id": "acceptance-02",
+          "topic": "setup",
+          "query": "The failing path has only two LUTs but most of its delay is interconnect. What placement and routing factors should I inspect?",
+          "hit": true,
+          "first_relevant_rank": 5,
+          "results": [
+            {
+              "chunk_id": "bce38fb1-a231-51e1-afdc-6db147a8a65d",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Setup regression after routing"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 8.997406940839443
+            },
+            {
+              "chunk_id": "266cf168-5d8e-572d-8f58-833c7a3ffcce",
+              "document_id": "hold-diagnosis",
+              "heading_path": [
+                "Diagnosing Hold Timing Violations",
+                "Input interface and board timing assumptions"
+              ],
+              "body_spans": [
+                [
+                  34,
+                  36
+                ]
+              ],
+              "score": 8.863430198668485
+            },
+            {
+              "chunk_id": "a576aea9-1f7e-5d86-9f22-da499776dd77",
+              "document_id": "setup-repair",
+              "heading_path": [
+                "Setup Repair Strategies and Preconditions",
+                "ASIC cell and load optimization"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 8.60945975646117
+            },
+            {
+              "chunk_id": "ce2afcc0-10c0-5dc8-8f51-f44a75e9620e",
+              "document_id": "timing-fundamentals",
+              "heading_path": [
+                "Timing Fundamentals for Setup and Hold",
+                "Clock skew and uncertainty are different"
+              ],
+              "body_spans": [
+                [
+                  41,
+                  43
+                ]
+              ],
+              "score": 7.785239711763182
+            },
+            {
+              "chunk_id": "fd7b1a2f-30c1-53b6-a979-466f4e9505db",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Routing, fanout, and placement restrictions"
+              ],
+              "body_spans": [
+                [
+                  25,
+                  25
+                ]
+              ],
+              "score": 7.741341479891659
+            }
+          ]
+        },
+        {
+          "id": "acceptance-03",
+          "topic": "setup",
+          "query": "The critical path begins at an unregistered block RAM output. What should I check in the synthesized design?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "99a71dd9-e407-5dc1-8473-807a5f3d01d4",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Dedicated block and inference bottlenecks"
+              ],
+              "body_spans": [
+                [
+                  21,
+                  21
+                ]
+              ],
+              "score": 23.593052027668946
+            },
+            {
+              "chunk_id": "266cf168-5d8e-572d-8f58-833c7a3ffcce",
+              "document_id": "hold-diagnosis",
+              "heading_path": [
+                "Diagnosing Hold Timing Violations",
+                "Input interface and board timing assumptions"
+              ],
+              "body_spans": [
+                [
+                  34,
+                  36
+                ]
+              ],
+              "score": 12.399696099008574
+            },
+            {
+              "chunk_id": "f613d278-be49-5d4e-83a5-1f30daefb38d",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Deep logic and unbalanced combinational stages"
+              ],
+              "body_spans": [
+                [
+                  17,
+                  17
+                ]
+              ],
+              "score": 10.553094756765706
+            },
+            {
+              "chunk_id": "83d962ee-ac78-55fe-8e43-b92de30f39ee",
+              "document_id": "setup-repair",
+              "heading_path": [
+                "Setup Repair Strategies and Preconditions",
+                "Replicate a timing-critical high-fanout driver"
+              ],
+              "body_spans": [
+                [
+                  25,
+                  25
+                ]
+              ],
+              "score": 6.488465681819729
+            },
+            {
+              "chunk_id": "2e188394-e413-50f3-a391-94eaa60b808e",
+              "document_id": "setup-repair",
+              "heading_path": [
+                "Setup Repair Strategies and Preconditions",
+                "Retiming and dedicated register resources"
+              ],
+              "body_spans": [
+                [
+                  21,
+                  21
+                ]
+              ],
+              "score": 6.390595786619414
+            }
+          ]
+        },
+        {
+          "id": "acceptance-04",
+          "topic": "setup",
+          "query": "Timing met the setup target after placement, then failed after route when hold was repaired. Which report evidence can explain this?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "bce38fb1-a231-51e1-afdc-6db147a8a65d",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Setup regression after routing"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 13.402829895212893
+            },
+            {
+              "chunk_id": "215d0091-a056-50b5-aa18-5a3370533d75",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Signoff uses implemented timing evidence"
+              ],
+              "body_spans": [
+                [
+                  40,
+                  40
+                ]
+              ],
+              "score": 10.131224047225038
+            },
+            {
+              "chunk_id": "c44db87d-bf20-514f-b40a-91de3088d26c",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Resource cost and setup versus hold interaction"
+              ],
+              "body_spans": [
+                [
+                  26,
+                  28
+                ]
+              ],
+              "score": 9.970077995231978
+            },
+            {
+              "chunk_id": "5aad3a06-3b01-508e-bad4-db6cd17acb2a",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "FPGA physical hold optimization"
+              ],
+              "body_spans": [
+                [
+                  21,
+                  21
+                ]
+              ],
+              "score": 9.518079516700663
+            },
+            {
+              "chunk_id": "fc74cfe7-2126-5d8b-bad7-376d61090b3f",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Resource cost and setup versus hold interaction"
+              ],
+              "body_spans": [
+                [
+                  32,
+                  34
+                ]
+              ],
+              "score": 8.707895007653189
+            }
+          ]
+        },
+        {
+          "id": "acceptance-05",
+          "topic": "setup",
+          "query": "I want to split a datapath with a new register, but the interface expects data_valid on a fixed cycle. What must be agreed before this repair?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "2bd92509-a1d5-5cc7-be31-e3b08f9c16f3",
+              "document_id": "setup-repair",
+              "heading_path": [
+                "Setup Repair Strategies and Preconditions",
+                "Pipeline only with an accepted latency contract"
+              ],
+              "body_spans": [
+                [
+                  17,
+                  17
+                ]
+              ],
+              "score": 19.3935821258176
+            },
+            {
+              "chunk_id": "266cf168-5d8e-572d-8f58-833c7a3ffcce",
+              "document_id": "hold-diagnosis",
+              "heading_path": [
+                "Diagnosing Hold Timing Violations",
+                "Input interface and board timing assumptions"
+              ],
+              "body_spans": [
+                [
+                  34,
+                  36
+                ]
+              ],
+              "score": 13.448263532794606
+            },
+            {
+              "chunk_id": "a4315b6d-19b9-5eaf-b593-c1f6fdf0a54b",
+              "document_id": "timing-fundamentals",
+              "heading_path": [
+                "Timing Fundamentals for Setup and Hold",
+                "Hold checks limit early data"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 11.43938388662268
+            },
+            {
+              "chunk_id": "fe3e5cae-f2e6-5aff-95fc-7b7a2178be85",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "Why lowering frequency usually does not fix same-edge hold"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 10.195378078980509
+            },
+            {
+              "chunk_id": "e11e5379-c6d7-5411-8a5c-402f990f4bd8",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Reproduce an ASIC timing comparison"
+              ],
+              "body_spans": [
+                [
+                  44,
+                  44
+                ]
+              ],
+              "score": 10.174860322218915
+            }
+          ]
+        },
+        {
+          "id": "acceptance-06",
+          "topic": "setup",
+          "query": "One synchronous control register drives many distant loads. How can replication help and why avoid a global fanout threshold?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "83d962ee-ac78-55fe-8e43-b92de30f39ee",
+              "document_id": "setup-repair",
+              "heading_path": [
+                "Setup Repair Strategies and Preconditions",
+                "Replicate a timing-critical high-fanout driver"
+              ],
+              "body_spans": [
+                [
+                  25,
+                  25
+                ]
+              ],
+              "score": 27.275067964951365
+            },
+            {
+              "chunk_id": "fd7b1a2f-30c1-53b6-a979-466f4e9505db",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Routing, fanout, and placement restrictions"
+              ],
+              "body_spans": [
+                [
+                  25,
+                  25
+                ]
+              ],
+              "score": 7.580761755406694
+            },
+            {
+              "chunk_id": "a576aea9-1f7e-5d86-9f22-da499776dd77",
+              "document_id": "setup-repair",
+              "heading_path": [
+                "Setup Repair Strategies and Preconditions",
+                "ASIC cell and load optimization"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 6.592797968367757
+            },
+            {
+              "chunk_id": "c44db87d-bf20-514f-b40a-91de3088d26c",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Resource cost and setup versus hold interaction"
+              ],
+              "body_spans": [
+                [
+                  26,
+                  28
+                ]
+              ],
+              "score": 6.009505669843382
+            },
+            {
+              "chunk_id": "2aeaca18-9687-551b-9b35-5263b9baec89",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Recheck both delay directions and all required corners"
+              ],
+              "body_spans": [
+                [
+                  18,
+                  18
+                ]
+              ],
+              "score": 5.518507767213528
+            }
+          ]
+        },
+        {
+          "id": "acceptance-07",
+          "topic": "setup",
+          "query": "Which technology-mapped optimization choices can OpenROAD use on an ASIC path that misses setup?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "a576aea9-1f7e-5d86-9f22-da499776dd77",
+              "document_id": "setup-repair",
+              "heading_path": [
+                "Setup Repair Strategies and Preconditions",
+                "ASIC cell and load optimization"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 17.551457537456873
+            },
+            {
+              "chunk_id": "b5bd5ca6-dbda-5145-8a7e-44dded080746",
+              "document_id": "timing-fundamentals",
+              "heading_path": [
+                "Timing Fundamentals for Setup and Hold",
+                "STA evidence includes more than RTL"
+              ],
+              "body_spans": [
+                [
+                  47,
+                  47
+                ]
+              ],
+              "score": 8.416815623777893
+            },
+            {
+              "chunk_id": "363a90e8-9548-5c24-beb8-0df4351b665e",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "ASIC delay insertion after clock tree synthesis"
+              ],
+              "body_spans": [
+                [
+                  17,
+                  17
+                ]
+              ],
+              "score": 7.750767563970548
+            },
+            {
+              "chunk_id": "5b6a8278-df3e-537c-8061-f4982f86e50f",
+              "document_id": "timing-fundamentals",
+              "heading_path": [
+                "Timing Fundamentals for Setup and Hold",
+                "Setup checks limit late data"
+              ],
+              "body_spans": [
+                [
+                  17,
+                  17
+                ]
+              ],
+              "score": 5.809731287418217
+            },
+            {
+              "chunk_id": "e11e5379-c6d7-5411-8a5c-402f990f4bd8",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Reproduce an ASIC timing comparison"
+              ],
+              "body_spans": [
+                [
+                  44,
+                  44
+                ]
+              ],
+              "score": 5.213361628626791
+            }
+          ]
+        },
+        {
+          "id": "acceptance-08",
+          "topic": "setup",
+          "query": "Is a multicycle exception a valid way to remove a setup failure when the endpoint still samples every cycle?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "1f85d774-ae2b-5fd0-9ae8-d12a45ce4922",
+              "document_id": "setup-repair",
+              "heading_path": [
+                "Setup Repair Strategies and Preconditions",
+                "Multicycle constraints require real functional intent"
+              ],
+              "body_spans": [
+                [
+                  33,
+                  33
+                ]
+              ],
+              "score": 18.240435159897416
+            },
+            {
+              "chunk_id": "9f19187d-168e-5629-bf6c-97122b3aea75",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "Correct an erroneous hold relationship"
+              ],
+              "body_spans": [
+                [
+                  25,
+                  25
+                ]
+              ],
+              "score": 10.582791655394336
+            },
+            {
+              "chunk_id": "6c0673e6-190e-5b25-b8a1-0853a21a7cd4",
+              "document_id": "hold-diagnosis",
+              "heading_path": [
+                "Diagnosing Hold Timing Violations",
+                "Unexpected hold requirement after a multicycle exception"
+              ],
+              "body_spans": [
+                [
+                  26,
+                  26
+                ]
+              ],
+              "score": 10.235222347551542
+            },
+            {
+              "chunk_id": "f613d278-be49-5d4e-83a5-1f30daefb38d",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Deep logic and unbalanced combinational stages"
+              ],
+              "body_spans": [
+                [
+                  17,
+                  17
+                ]
+              ],
+              "score": 10.050519025421163
+            },
+            {
+              "chunk_id": "2bd92509-a1d5-5cc7-be31-e3b08f9c16f3",
+              "document_id": "setup-repair",
+              "heading_path": [
+                "Setup Repair Strategies and Preconditions",
+                "Pipeline only with an accepted latency contract"
+              ],
+              "body_spans": [
+                [
+                  17,
+                  17
+                ]
+              ],
+              "score": 9.91370966193336
+            }
+          ]
+        },
+        {
+          "id": "acceptance-09",
+          "topic": "setup",
+          "query": "Can existing registers be moved across combinational logic to redistribute stage delay, and what behavior needs checking?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "2e188394-e413-50f3-a391-94eaa60b808e",
+              "document_id": "setup-repair",
+              "heading_path": [
+                "Setup Repair Strategies and Preconditions",
+                "Retiming and dedicated register resources"
+              ],
+              "body_spans": [
+                [
+                  21,
+                  21
+                ]
+              ],
+              "score": 15.241978646597676
+            },
+            {
+              "chunk_id": "fc74cfe7-2126-5d8b-bad7-376d61090b3f",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Resource cost and setup versus hold interaction"
+              ],
+              "body_spans": [
+                [
+                  32,
+                  34
+                ]
+              ],
+              "score": 6.087148818344461
+            },
+            {
+              "chunk_id": "99a71dd9-e407-5dc1-8473-807a5f3d01d4",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Dedicated block and inference bottlenecks"
+              ],
+              "body_spans": [
+                [
+                  21,
+                  21
+                ]
+              ],
+              "score": 6.037608484806161
+            },
+            {
+              "chunk_id": "2bd92509-a1d5-5cc7-be31-e3b08f9c16f3",
+              "document_id": "setup-repair",
+              "heading_path": [
+                "Setup Repair Strategies and Preconditions",
+                "Pipeline only with an accepted latency contract"
+              ],
+              "body_spans": [
+                [
+                  17,
+                  17
+                ]
+              ],
+              "score": 5.511472093401863
+            },
+            {
+              "chunk_id": "dae7c739-ded4-5f0f-8cc3-4a65df56d9a0",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "Register insertion needs a sequential behavior review"
+              ],
+              "body_spans": [
+                [
+                  33,
+                  33
+                ]
+              ],
+              "score": 5.270489126360754
+            }
+          ]
+        },
+        {
+          "id": "acceptance-10",
+          "topic": "setup",
+          "query": "A revised RTL design synthesizes successfully and simulates correctly. What implementation evidence is still needed for timing signoff?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "215d0091-a056-50b5-aa18-5a3370533d75",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Signoff uses implemented timing evidence"
+              ],
+              "body_spans": [
+                [
+                  40,
+                  40
+                ]
+              ],
+              "score": 14.548271501124663
+            },
+            {
+              "chunk_id": "b5bd5ca6-dbda-5145-8a7e-44dded080746",
+              "document_id": "timing-fundamentals",
+              "heading_path": [
+                "Timing Fundamentals for Setup and Hold",
+                "STA evidence includes more than RTL"
+              ],
+              "body_spans": [
+                [
+                  47,
+                  47
+                ]
+              ],
+              "score": 8.986572548400813
+            },
+            {
+              "chunk_id": "99a71dd9-e407-5dc1-8473-807a5f3d01d4",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Dedicated block and inference bottlenecks"
+              ],
+              "body_spans": [
+                [
+                  21,
+                  21
+                ]
+              ],
+              "score": 7.896812213338712
+            },
+            {
+              "chunk_id": "fc74cfe7-2126-5d8b-bad7-376d61090b3f",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Resource cost and setup versus hold interaction"
+              ],
+              "body_spans": [
+                [
+                  32,
+                  34
+                ]
+              ],
+              "score": 7.392844863894416
+            },
+            {
+              "chunk_id": "f613d278-be49-5d4e-83a5-1f30daefb38d",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Deep logic and unbalanced combinational stages"
+              ],
+              "body_spans": [
+                [
+                  17,
+                  17
+                ]
+              ],
+              "score": 7.070466499803167
+            }
+          ]
+        },
+        {
+          "id": "acceptance-11",
+          "topic": "hold",
+          "query": "A direct connection between two registers has excellent setup slack but negative minimum slack. How can so little logic be a problem?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "d3573e22-bfa5-526c-b5c2-4b081c3578d2",
+              "document_id": "hold-diagnosis",
+              "heading_path": [
+                "Diagnosing Hold Timing Violations",
+                "Short paths and earliest arrival"
+              ],
+              "body_spans": [
+                [
+                  18,
+                  18
+                ]
+              ],
+              "score": 13.989048949144575
+            },
+            {
+              "chunk_id": "a4315b6d-19b9-5eaf-b593-c1f6fdf0a54b",
+              "document_id": "timing-fundamentals",
+              "heading_path": [
+                "Timing Fundamentals for Setup and Hold",
+                "Hold checks limit early data"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 12.47132845817025
+            },
+            {
+              "chunk_id": "bce38fb1-a231-51e1-afdc-6db147a8a65d",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Setup regression after routing"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 10.700931039401226
+            },
+            {
+              "chunk_id": "f613d278-be49-5d4e-83a5-1f30daefb38d",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Deep logic and unbalanced combinational stages"
+              ],
+              "body_spans": [
+                [
+                  17,
+                  17
+                ]
+              ],
+              "score": 9.899921955568212
+            },
+            {
+              "chunk_id": "b8cf1ca8-e101-5eb7-84cb-9ec8f4bdf96e",
+              "document_id": "hold-diagnosis",
+              "heading_path": [
+                "Diagnosing Hold Timing Violations",
+                "Uncertainty in the actual hold report"
+              ],
+              "body_spans": [
+                [
+                  30,
+                  30
+                ]
+              ],
+              "score": 8.76578537306108
+            }
+          ]
+        },
+        {
+          "id": "acceptance-12",
+          "topic": "hold",
+          "query": "The receiving register clock arrives substantially later than the launching clock. Why does that hurt a same-edge hold check?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "55e2ea67-6862-52ab-b380-9ab9a34bdeb7",
+              "document_id": "hold-diagnosis",
+              "heading_path": [
+                "Diagnosing Hold Timing Violations",
+                "Late capture clock and excessive skew"
+              ],
+              "body_spans": [
+                [
+                  22,
+                  22
+                ]
+              ],
+              "score": 18.109174617994338
+            },
+            {
+              "chunk_id": "fe3e5cae-f2e6-5aff-95fc-7b7a2178be85",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "Why lowering frequency usually does not fix same-edge hold"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 17.31022592432977
+            },
+            {
+              "chunk_id": "5b6a8278-df3e-537c-8061-f4982f86e50f",
+              "document_id": "timing-fundamentals",
+              "heading_path": [
+                "Timing Fundamentals for Setup and Hold",
+                "Setup checks limit late data"
+              ],
+              "body_spans": [
+                [
+                  17,
+                  17
+                ]
+              ],
+              "score": 12.380366170812446
+            },
+            {
+              "chunk_id": "bce38fb1-a231-51e1-afdc-6db147a8a65d",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Setup regression after routing"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 9.00621779872479
+            },
+            {
+              "chunk_id": "a4315b6d-19b9-5eaf-b593-c1f6fdf0a54b",
+              "document_id": "timing-fundamentals",
+              "heading_path": [
+                "Timing Fundamentals for Setup and Hold",
+                "Hold checks limit early data"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 8.871861816463225
+            }
+          ]
+        },
+        {
+          "id": "acceptance-13",
+          "topic": "hold",
+          "query": "After adding a setup multicycle constraint, the minimum-delay requirement became unexpectedly large. What should be reviewed first?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "6c0673e6-190e-5b25-b8a1-0853a21a7cd4",
+              "document_id": "hold-diagnosis",
+              "heading_path": [
+                "Diagnosing Hold Timing Violations",
+                "Unexpected hold requirement after a multicycle exception"
+              ],
+              "body_spans": [
+                [
+                  26,
+                  26
+                ]
+              ],
+              "score": 14.170077757530429
+            },
+            {
+              "chunk_id": "bce38fb1-a231-51e1-afdc-6db147a8a65d",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Setup regression after routing"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 10.277468846856083
+            },
+            {
+              "chunk_id": "9f19187d-168e-5629-bf6c-97122b3aea75",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "Correct an erroneous hold relationship"
+              ],
+              "body_spans": [
+                [
+                  25,
+                  25
+                ]
+              ],
+              "score": 9.115092360761107
+            },
+            {
+              "chunk_id": "fc74cfe7-2126-5d8b-bad7-376d61090b3f",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Resource cost and setup versus hold interaction"
+              ],
+              "body_spans": [
+                [
+                  32,
+                  34
+                ]
+              ],
+              "score": 9.084749349529432
+            },
+            {
+              "chunk_id": "99a71dd9-e407-5dc1-8473-807a5f3d01d4",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Dedicated block and inference bottlenecks"
+              ],
+              "body_spans": [
+                [
+                  21,
+                  21
+                ]
+              ],
+              "score": 8.313742965057049
+            }
+          ]
+        },
+        {
+          "id": "acceptance-14",
+          "topic": "hold",
+          "query": "An FPGA input-to-register hold check fails. How do external chip and board arrival assumptions enter the investigation?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "266cf168-5d8e-572d-8f58-833c7a3ffcce",
+              "document_id": "hold-diagnosis",
+              "heading_path": [
+                "Diagnosing Hold Timing Violations",
+                "Input interface and board timing assumptions"
+              ],
+              "body_spans": [
+                [
+                  34,
+                  36
+                ]
+              ],
+              "score": 26.388257481185654
+            },
+            {
+              "chunk_id": "b8cf1ca8-e101-5eb7-84cb-9ec8f4bdf96e",
+              "document_id": "hold-diagnosis",
+              "heading_path": [
+                "Diagnosing Hold Timing Violations",
+                "Uncertainty in the actual hold report"
+              ],
+              "body_spans": [
+                [
+                  30,
+                  30
+                ]
+              ],
+              "score": 7.945299097014196
+            },
+            {
+              "chunk_id": "5b6a8278-df3e-537c-8061-f4982f86e50f",
+              "document_id": "timing-fundamentals",
+              "heading_path": [
+                "Timing Fundamentals for Setup and Hold",
+                "Setup checks limit late data"
+              ],
+              "body_spans": [
+                [
+                  17,
+                  17
+                ]
+              ],
+              "score": 7.437569595971788
+            },
+            {
+              "chunk_id": "dae7c739-ded4-5f0f-8cc3-4a65df56d9a0",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "Register insertion needs a sequential behavior review"
+              ],
+              "body_spans": [
+                [
+                  33,
+                  33
+                ]
+              ],
+              "score": 7.133733011227669
+            },
+            {
+              "chunk_id": "a4315b6d-19b9-5eaf-b593-c1f6fdf0a54b",
+              "document_id": "timing-fundamentals",
+              "heading_path": [
+                "Timing Fundamentals for Setup and Hold",
+                "Hold checks limit early data"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 6.847286087808762
+            }
+          ]
+        },
+        {
+          "id": "acceptance-15",
+          "topic": "hold",
+          "query": "How should I investigate the user margin and calculated variation appearing in a Vivado hold report?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "b8cf1ca8-e101-5eb7-84cb-9ec8f4bdf96e",
+              "document_id": "hold-diagnosis",
+              "heading_path": [
+                "Diagnosing Hold Timing Violations",
+                "Uncertainty in the actual hold report"
+              ],
+              "body_spans": [
+                [
+                  30,
+                  30
+                ]
+              ],
+              "score": 18.174518882249583
+            },
+            {
+              "chunk_id": "266cf168-5d8e-572d-8f58-833c7a3ffcce",
+              "document_id": "hold-diagnosis",
+              "heading_path": [
+                "Diagnosing Hold Timing Violations",
+                "Input interface and board timing assumptions"
+              ],
+              "body_spans": [
+                [
+                  34,
+                  36
+                ]
+              ],
+              "score": 9.812294463530401
+            },
+            {
+              "chunk_id": "ce2afcc0-10c0-5dc8-8f51-f44a75e9620e",
+              "document_id": "timing-fundamentals",
+              "heading_path": [
+                "Timing Fundamentals for Setup and Hold",
+                "Clock skew and uncertainty are different"
+              ],
+              "body_spans": [
+                [
+                  41,
+                  43
+                ]
+              ],
+              "score": 8.600850177925103
+            },
+            {
+              "chunk_id": "55e2ea67-6862-52ab-b380-9ab9a34bdeb7",
+              "document_id": "hold-diagnosis",
+              "heading_path": [
+                "Diagnosing Hold Timing Violations",
+                "Late capture clock and excessive skew"
+              ],
+              "body_spans": [
+                [
+                  22,
+                  22
+                ]
+              ],
+              "score": 6.89573897024539
+            },
+            {
+              "chunk_id": "f613d278-be49-5d4e-83a5-1f30daefb38d",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Deep logic and unbalanced combinational stages"
+              ],
+              "body_spans": [
+                [
+                  17,
+                  17
+                ]
+              ],
+              "score": 6.856640390508677
+            }
+          ]
+        },
+        {
+          "id": "acceptance-16",
+          "topic": "hold",
+          "query": "When should OpenROAD insert hold buffers, and how does it avoid breaking setup while doing so?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "363a90e8-9548-5c24-beb8-0df4351b665e",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "ASIC delay insertion after clock tree synthesis"
+              ],
+              "body_spans": [
+                [
+                  17,
+                  17
+                ]
+              ],
+              "score": 9.728936257555292
+            },
+            {
+              "chunk_id": "a576aea9-1f7e-5d86-9f22-da499776dd77",
+              "document_id": "setup-repair",
+              "heading_path": [
+                "Setup Repair Strategies and Preconditions",
+                "ASIC cell and load optimization"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 8.810746310615574
+            },
+            {
+              "chunk_id": "b8cf1ca8-e101-5eb7-84cb-9ec8f4bdf96e",
+              "document_id": "hold-diagnosis",
+              "heading_path": [
+                "Diagnosing Hold Timing Violations",
+                "Uncertainty in the actual hold report"
+              ],
+              "body_spans": [
+                [
+                  30,
+                  30
+                ]
+              ],
+              "score": 8.364440396591418
+            },
+            {
+              "chunk_id": "b5bd5ca6-dbda-5145-8a7e-44dded080746",
+              "document_id": "timing-fundamentals",
+              "heading_path": [
+                "Timing Fundamentals for Setup and Hold",
+                "STA evidence includes more than RTL"
+              ],
+              "body_spans": [
+                [
+                  47,
+                  47
+                ]
+              ],
+              "score": 7.889406708118873
+            },
+            {
+              "chunk_id": "1f85d774-ae2b-5fd0-9ae8-d12a45ce4922",
+              "document_id": "setup-repair",
+              "heading_path": [
+                "Setup Repair Strategies and Preconditions",
+                "Multicycle constraints require real functional intent"
+              ],
+              "body_spans": [
+                [
+                  33,
+                  33
+                ]
+              ],
+              "score": 7.623405032251617
+            }
+          ]
+        },
+        {
+          "id": "acceptance-17",
+          "topic": "hold",
+          "query": "What Vivado physical optimization options add LUT1 delay to severe hold paths before routing?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "5aad3a06-3b01-508e-bad4-db6cd17acb2a",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "FPGA physical hold optimization"
+              ],
+              "body_spans": [
+                [
+                  21,
+                  21
+                ]
+              ],
+              "score": 16.14419347385475
+            },
+            {
+              "chunk_id": "dae7c739-ded4-5f0f-8cc3-4a65df56d9a0",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "Register insertion needs a sequential behavior review"
+              ],
+              "body_spans": [
+                [
+                  33,
+                  33
+                ]
+              ],
+              "score": 6.845617971768119
+            },
+            {
+              "chunk_id": "fc74cfe7-2126-5d8b-bad7-376d61090b3f",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Resource cost and setup versus hold interaction"
+              ],
+              "body_spans": [
+                [
+                  32,
+                  34
+                ]
+              ],
+              "score": 5.860099849761953
+            },
+            {
+              "chunk_id": "fd7b1a2f-30c1-53b6-a979-466f4e9505db",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Routing, fanout, and placement restrictions"
+              ],
+              "body_spans": [
+                [
+                  25,
+                  25
+                ]
+              ],
+              "score": 4.708252246367752
+            },
+            {
+              "chunk_id": "83d962ee-ac78-55fe-8e43-b92de30f39ee",
+              "document_id": "setup-repair",
+              "heading_path": [
+                "Setup Repair Strategies and Preconditions",
+                "Replicate a timing-critical high-fanout driver"
+              ],
+              "body_spans": [
+                [
+                  25,
+                  25
+                ]
+              ],
+              "score": 4.433265533638784
+            }
+          ]
+        },
+        {
+          "id": "acceptance-18",
+          "topic": "hold",
+          "query": "Will reducing the clock frequency repair an ordinary same-edge register hold failure?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "fe3e5cae-f2e6-5aff-95fc-7b7a2178be85",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "Why lowering frequency usually does not fix same-edge hold"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 11.151701152651084
+            },
+            {
+              "chunk_id": "dae7c739-ded4-5f0f-8cc3-4a65df56d9a0",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "Register insertion needs a sequential behavior review"
+              ],
+              "body_spans": [
+                [
+                  33,
+                  33
+                ]
+              ],
+              "score": 8.849525292851638
+            },
+            {
+              "chunk_id": "55e2ea67-6862-52ab-b380-9ab9a34bdeb7",
+              "document_id": "hold-diagnosis",
+              "heading_path": [
+                "Diagnosing Hold Timing Violations",
+                "Late capture clock and excessive skew"
+              ],
+              "body_spans": [
+                [
+                  22,
+                  22
+                ]
+              ],
+              "score": 6.612721307837805
+            },
+            {
+              "chunk_id": "266cf168-5d8e-572d-8f58-833c7a3ffcce",
+              "document_id": "hold-diagnosis",
+              "heading_path": [
+                "Diagnosing Hold Timing Violations",
+                "Input interface and board timing assumptions"
+              ],
+              "body_spans": [
+                [
+                  34,
+                  36
+                ]
+              ],
+              "score": 6.600183656187245
+            },
+            {
+              "chunk_id": "2bd92509-a1d5-5cc7-be31-e3b08f9c16f3",
+              "document_id": "setup-repair",
+              "heading_path": [
+                "Setup Repair Strategies and Preconditions",
+                "Pipeline only with an accepted latency contract"
+              ],
+              "body_spans": [
+                [
+                  17,
+                  17
+                ]
+              ],
+              "score": 6.40107871126926
+            }
+          ]
+        },
+        {
+          "id": "acceptance-19",
+          "topic": "hold",
+          "query": "Why is adding an ordinary pipeline register not automatically a safe replacement for a hold buffer?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "dae7c739-ded4-5f0f-8cc3-4a65df56d9a0",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "Register insertion needs a sequential behavior review"
+              ],
+              "body_spans": [
+                [
+                  33,
+                  33
+                ]
+              ],
+              "score": 13.670872278509801
+            },
+            {
+              "chunk_id": "fe3e5cae-f2e6-5aff-95fc-7b7a2178be85",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "Why lowering frequency usually does not fix same-edge hold"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 8.495335140681101
+            },
+            {
+              "chunk_id": "2bd92509-a1d5-5cc7-be31-e3b08f9c16f3",
+              "document_id": "setup-repair",
+              "heading_path": [
+                "Setup Repair Strategies and Preconditions",
+                "Pipeline only with an accepted latency contract"
+              ],
+              "body_spans": [
+                [
+                  17,
+                  17
+                ]
+              ],
+              "score": 8.227541400833395
+            },
+            {
+              "chunk_id": "c44db87d-bf20-514f-b40a-91de3088d26c",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Resource cost and setup versus hold interaction"
+              ],
+              "body_spans": [
+                [
+                  26,
+                  28
+                ]
+              ],
+              "score": 8.176222248466717
+            },
+            {
+              "chunk_id": "f613d278-be49-5d4e-83a5-1f30daefb38d",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Deep logic and unbalanced combinational stages"
+              ],
+              "body_spans": [
+                [
+                  17,
+                  17
+                ]
+              ],
+              "score": 6.128581007242575
+            }
+          ]
+        },
+        {
+          "id": "acceptance-20",
+          "topic": "hold",
+          "query": "A hold fix passes at the fast corner. Is that enough, or should maximum and minimum timing be checked elsewhere too?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "2aeaca18-9687-551b-9b35-5263b9baec89",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Recheck both delay directions and all required corners"
+              ],
+              "body_spans": [
+                [
+                  18,
+                  18
+                ]
+              ],
+              "score": 19.537793741447665
+            },
+            {
+              "chunk_id": "65e352fa-2693-5793-add6-6b6e1f3f223e",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Maximum-delay analysis context"
+              ],
+              "body_spans": [
+                [
+                  33,
+                  33
+                ]
+              ],
+              "score": 16.56220684312492
+            },
+            {
+              "chunk_id": "d3573e22-bfa5-526c-b5c2-4b081c3578d2",
+              "document_id": "hold-diagnosis",
+              "heading_path": [
+                "Diagnosing Hold Timing Violations",
+                "Short paths and earliest arrival"
+              ],
+              "body_spans": [
+                [
+                  18,
+                  18
+                ]
+              ],
+              "score": 14.475999182056603
+            },
+            {
+              "chunk_id": "a4315b6d-19b9-5eaf-b593-c1f6fdf0a54b",
+              "document_id": "timing-fundamentals",
+              "heading_path": [
+                "Timing Fundamentals for Setup and Hold",
+                "Hold checks limit early data"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 11.589354392845847
+            },
+            {
+              "chunk_id": "fe3e5cae-f2e6-5aff-95fc-7b7a2178be85",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "Why lowering frequency usually does not fix same-edge hold"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 11.497688200861829
+            }
+          ]
+        }
+      ]
+    },
+    "hybrid": {
+      "overall": {
+        "count": 20,
+        "hits": 20,
+        "hit_rate_at_5": 1.0
+      },
+      "setup": {
+        "count": 10,
+        "hits": 10,
+        "hit_rate_at_5": 1.0
+      },
+      "hold": {
+        "count": 10,
+        "hits": 10,
+        "hit_rate_at_5": 1.0
+      },
+      "queries": [
+        {
+          "id": "acceptance-01",
+          "topic": "setup",
+          "query": "A critical stage contains several serial arithmetic operations while the next stage is almost empty. How should I investigate the imbalance?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "f613d278-be49-5d4e-83a5-1f30daefb38d",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Deep logic and unbalanced combinational stages"
+              ],
+              "body_spans": [
+                [
+                  17,
+                  17
+                ]
+              ],
+              "score": 0.03278688524590164
+            },
+            {
+              "chunk_id": "fc74cfe7-2126-5d8b-bad7-376d61090b3f",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Resource cost and setup versus hold interaction"
+              ],
+              "body_spans": [
+                [
+                  32,
+                  34
+                ]
+              ],
+              "score": 0.031009615384615385
+            },
+            {
+              "chunk_id": "215d0091-a056-50b5-aa18-5a3370533d75",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Signoff uses implemented timing evidence"
+              ],
+              "body_spans": [
+                [
+                  40,
+                  40
+                ]
+              ],
+              "score": 0.0304147465437788
+            },
+            {
+              "chunk_id": "99a71dd9-e407-5dc1-8473-807a5f3d01d4",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Dedicated block and inference bottlenecks"
+              ],
+              "body_spans": [
+                [
+                  21,
+                  21
+                ]
+              ],
+              "score": 0.029910714285714284
+            },
+            {
+              "chunk_id": "2bd92509-a1d5-5cc7-be31-e3b08f9c16f3",
+              "document_id": "setup-repair",
+              "heading_path": [
+                "Setup Repair Strategies and Preconditions",
+                "Pipeline only with an accepted latency contract"
+              ],
+              "body_spans": [
+                [
+                  17,
+                  17
+                ]
+              ],
+              "score": 0.02946236559139785
+            }
+          ]
+        },
+        {
+          "id": "acceptance-02",
+          "topic": "setup",
+          "query": "The failing path has only two LUTs but most of its delay is interconnect. What placement and routing factors should I inspect?",
+          "hit": true,
+          "first_relevant_rank": 2,
+          "results": [
+            {
+              "chunk_id": "bce38fb1-a231-51e1-afdc-6db147a8a65d",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Setup regression after routing"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 0.03252247488101534
+            },
+            {
+              "chunk_id": "fd7b1a2f-30c1-53b6-a979-466f4e9505db",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Routing, fanout, and placement restrictions"
+              ],
+              "body_spans": [
+                [
+                  25,
+                  25
+                ]
+              ],
+              "score": 0.03177805800756621
+            },
+            {
+              "chunk_id": "99a71dd9-e407-5dc1-8473-807a5f3d01d4",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Dedicated block and inference bottlenecks"
+              ],
+              "body_spans": [
+                [
+                  21,
+                  21
+                ]
+              ],
+              "score": 0.030536130536130537
+            },
+            {
+              "chunk_id": "266cf168-5d8e-572d-8f58-833c7a3ffcce",
+              "document_id": "hold-diagnosis",
+              "heading_path": [
+                "Diagnosing Hold Timing Violations",
+                "Input interface and board timing assumptions"
+              ],
+              "body_spans": [
+                [
+                  34,
+                  36
+                ]
+              ],
+              "score": 0.029827662395050816
+            },
+            {
+              "chunk_id": "2e188394-e413-50f3-a391-94eaa60b808e",
+              "document_id": "setup-repair",
+              "heading_path": [
+                "Setup Repair Strategies and Preconditions",
+                "Retiming and dedicated register resources"
+              ],
+              "body_spans": [
+                [
+                  21,
+                  21
+                ]
+              ],
+              "score": 0.028991596638655463
+            }
+          ]
+        },
+        {
+          "id": "acceptance-03",
+          "topic": "setup",
+          "query": "The critical path begins at an unregistered block RAM output. What should I check in the synthesized design?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "99a71dd9-e407-5dc1-8473-807a5f3d01d4",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Dedicated block and inference bottlenecks"
+              ],
+              "body_spans": [
+                [
+                  21,
+                  21
+                ]
+              ],
+              "score": 0.03278688524590164
+            },
+            {
+              "chunk_id": "f613d278-be49-5d4e-83a5-1f30daefb38d",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Deep logic and unbalanced combinational stages"
+              ],
+              "body_spans": [
+                [
+                  17,
+                  17
+                ]
+              ],
+              "score": 0.03125763125763126
+            },
+            {
+              "chunk_id": "266cf168-5d8e-572d-8f58-833c7a3ffcce",
+              "document_id": "hold-diagnosis",
+              "heading_path": [
+                "Diagnosing Hold Timing Violations",
+                "Input interface and board timing assumptions"
+              ],
+              "body_spans": [
+                [
+                  34,
+                  36
+                ]
+              ],
+              "score": 0.031054405392392875
+            },
+            {
+              "chunk_id": "2e188394-e413-50f3-a391-94eaa60b808e",
+              "document_id": "setup-repair",
+              "heading_path": [
+                "Setup Repair Strategies and Preconditions",
+                "Retiming and dedicated register resources"
+              ],
+              "body_spans": [
+                [
+                  21,
+                  21
+                ]
+              ],
+              "score": 0.031009615384615385
+            },
+            {
+              "chunk_id": "bce38fb1-a231-51e1-afdc-6db147a8a65d",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Setup regression after routing"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 0.030798389007344232
+            }
+          ]
+        },
+        {
+          "id": "acceptance-04",
+          "topic": "setup",
+          "query": "Timing met the setup target after placement, then failed after route when hold was repaired. Which report evidence can explain this?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "bce38fb1-a231-51e1-afdc-6db147a8a65d",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Setup regression after routing"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 0.03278688524590164
+            },
+            {
+              "chunk_id": "c44db87d-bf20-514f-b40a-91de3088d26c",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Resource cost and setup versus hold interaction"
+              ],
+              "body_spans": [
+                [
+                  26,
+                  28
+                ]
+              ],
+              "score": 0.031746031746031744
+            },
+            {
+              "chunk_id": "6c0673e6-190e-5b25-b8a1-0853a21a7cd4",
+              "document_id": "hold-diagnosis",
+              "heading_path": [
+                "Diagnosing Hold Timing Violations",
+                "Unexpected hold requirement after a multicycle exception"
+              ],
+              "body_spans": [
+                [
+                  26,
+                  26
+                ]
+              ],
+              "score": 0.030834914611005692
+            },
+            {
+              "chunk_id": "363a90e8-9548-5c24-beb8-0df4351b665e",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "ASIC delay insertion after clock tree synthesis"
+              ],
+              "body_spans": [
+                [
+                  17,
+                  17
+                ]
+              ],
+              "score": 0.030536130536130537
+            },
+            {
+              "chunk_id": "5aad3a06-3b01-508e-bad4-db6cd17acb2a",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "FPGA physical hold optimization"
+              ],
+              "body_spans": [
+                [
+                  21,
+                  21
+                ]
+              ],
+              "score": 0.029910714285714284
+            }
+          ]
+        },
+        {
+          "id": "acceptance-05",
+          "topic": "setup",
+          "query": "I want to split a datapath with a new register, but the interface expects data_valid on a fixed cycle. What must be agreed before this repair?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "2bd92509-a1d5-5cc7-be31-e3b08f9c16f3",
+              "document_id": "setup-repair",
+              "heading_path": [
+                "Setup Repair Strategies and Preconditions",
+                "Pipeline only with an accepted latency contract"
+              ],
+              "body_spans": [
+                [
+                  17,
+                  17
+                ]
+              ],
+              "score": 0.03278688524590164
+            },
+            {
+              "chunk_id": "dae7c739-ded4-5f0f-8cc3-4a65df56d9a0",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "Register insertion needs a sequential behavior review"
+              ],
+              "body_spans": [
+                [
+                  33,
+                  33
+                ]
+              ],
+              "score": 0.030798389007344232
+            },
+            {
+              "chunk_id": "eade761e-cdb2-5ae0-86fc-da4ec375dee5",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Preserve functional timing when adding latency"
+              ],
+              "body_spans": [
+                [
+                  22,
+                  22
+                ]
+              ],
+              "score": 0.0304147465437788
+            },
+            {
+              "chunk_id": "fc74cfe7-2126-5d8b-bad7-376d61090b3f",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Resource cost and setup versus hold interaction"
+              ],
+              "body_spans": [
+                [
+                  32,
+                  34
+                ]
+              ],
+              "score": 0.030090497737556562
+            },
+            {
+              "chunk_id": "266cf168-5d8e-572d-8f58-833c7a3ffcce",
+              "document_id": "hold-diagnosis",
+              "heading_path": [
+                "Diagnosing Hold Timing Violations",
+                "Input interface and board timing assumptions"
+              ],
+              "body_spans": [
+                [
+                  34,
+                  36
+                ]
+              ],
+              "score": 0.030017921146953404
+            }
+          ]
+        },
+        {
+          "id": "acceptance-06",
+          "topic": "setup",
+          "query": "One synchronous control register drives many distant loads. How can replication help and why avoid a global fanout threshold?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "83d962ee-ac78-55fe-8e43-b92de30f39ee",
+              "document_id": "setup-repair",
+              "heading_path": [
+                "Setup Repair Strategies and Preconditions",
+                "Replicate a timing-critical high-fanout driver"
+              ],
+              "body_spans": [
+                [
+                  25,
+                  25
+                ]
+              ],
+              "score": 0.03278688524590164
+            },
+            {
+              "chunk_id": "fd7b1a2f-30c1-53b6-a979-466f4e9505db",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Routing, fanout, and placement restrictions"
+              ],
+              "body_spans": [
+                [
+                  25,
+                  25
+                ]
+              ],
+              "score": 0.0315136476426799
+            },
+            {
+              "chunk_id": "a576aea9-1f7e-5d86-9f22-da499776dd77",
+              "document_id": "setup-repair",
+              "heading_path": [
+                "Setup Repair Strategies and Preconditions",
+                "ASIC cell and load optimization"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 0.030798389007344232
+            },
+            {
+              "chunk_id": "2bd92509-a1d5-5cc7-be31-e3b08f9c16f3",
+              "document_id": "setup-repair",
+              "heading_path": [
+                "Setup Repair Strategies and Preconditions",
+                "Pipeline only with an accepted latency contract"
+              ],
+              "body_spans": [
+                [
+                  17,
+                  17
+                ]
+              ],
+              "score": 0.03057889822595705
+            },
+            {
+              "chunk_id": "fe3e5cae-f2e6-5aff-95fc-7b7a2178be85",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "Why lowering frequency usually does not fix same-edge hold"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 0.03007688828584351
+            }
+          ]
+        },
+        {
+          "id": "acceptance-07",
+          "topic": "setup",
+          "query": "Which technology-mapped optimization choices can OpenROAD use on an ASIC path that misses setup?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "a576aea9-1f7e-5d86-9f22-da499776dd77",
+              "document_id": "setup-repair",
+              "heading_path": [
+                "Setup Repair Strategies and Preconditions",
+                "ASIC cell and load optimization"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 0.03278688524590164
+            },
+            {
+              "chunk_id": "363a90e8-9548-5c24-beb8-0df4351b665e",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "ASIC delay insertion after clock tree synthesis"
+              ],
+              "body_spans": [
+                [
+                  17,
+                  17
+                ]
+              ],
+              "score": 0.03200204813108039
+            },
+            {
+              "chunk_id": "b5bd5ca6-dbda-5145-8a7e-44dded080746",
+              "document_id": "timing-fundamentals",
+              "heading_path": [
+                "Timing Fundamentals for Setup and Hold",
+                "STA evidence includes more than RTL"
+              ],
+              "body_spans": [
+                [
+                  47,
+                  47
+                ]
+              ],
+              "score": 0.0315136476426799
+            },
+            {
+              "chunk_id": "e11e5379-c6d7-5411-8a5c-402f990f4bd8",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Reproduce an ASIC timing comparison"
+              ],
+              "body_spans": [
+                [
+                  44,
+                  44
+                ]
+              ],
+              "score": 0.030536130536130537
+            },
+            {
+              "chunk_id": "c44db87d-bf20-514f-b40a-91de3088d26c",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Resource cost and setup versus hold interaction"
+              ],
+              "body_spans": [
+                [
+                  26,
+                  28
+                ]
+              ],
+              "score": 0.030158730158730156
+            }
+          ]
+        },
+        {
+          "id": "acceptance-08",
+          "topic": "setup",
+          "query": "Is a multicycle exception a valid way to remove a setup failure when the endpoint still samples every cycle?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "1f85d774-ae2b-5fd0-9ae8-d12a45ce4922",
+              "document_id": "setup-repair",
+              "heading_path": [
+                "Setup Repair Strategies and Preconditions",
+                "Multicycle constraints require real functional intent"
+              ],
+              "body_spans": [
+                [
+                  33,
+                  33
+                ]
+              ],
+              "score": 0.03278688524590164
+            },
+            {
+              "chunk_id": "6c0673e6-190e-5b25-b8a1-0853a21a7cd4",
+              "document_id": "hold-diagnosis",
+              "heading_path": [
+                "Diagnosing Hold Timing Violations",
+                "Unexpected hold requirement after a multicycle exception"
+              ],
+              "body_spans": [
+                [
+                  26,
+                  26
+                ]
+              ],
+              "score": 0.03200204813108039
+            },
+            {
+              "chunk_id": "9f19187d-168e-5629-bf6c-97122b3aea75",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "Correct an erroneous hold relationship"
+              ],
+              "body_spans": [
+                [
+                  25,
+                  25
+                ]
+              ],
+              "score": 0.03200204813108039
+            },
+            {
+              "chunk_id": "2bd92509-a1d5-5cc7-be31-e3b08f9c16f3",
+              "document_id": "setup-repair",
+              "heading_path": [
+                "Setup Repair Strategies and Preconditions",
+                "Pipeline only with an accepted latency contract"
+              ],
+              "body_spans": [
+                [
+                  17,
+                  17
+                ]
+              ],
+              "score": 0.031009615384615385
+            },
+            {
+              "chunk_id": "bce38fb1-a231-51e1-afdc-6db147a8a65d",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Setup regression after routing"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 0.028985507246376812
+            }
+          ]
+        },
+        {
+          "id": "acceptance-09",
+          "topic": "setup",
+          "query": "Can existing registers be moved across combinational logic to redistribute stage delay, and what behavior needs checking?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "2e188394-e413-50f3-a391-94eaa60b808e",
+              "document_id": "setup-repair",
+              "heading_path": [
+                "Setup Repair Strategies and Preconditions",
+                "Retiming and dedicated register resources"
+              ],
+              "body_spans": [
+                [
+                  21,
+                  21
+                ]
+              ],
+              "score": 0.03278688524590164
+            },
+            {
+              "chunk_id": "2bd92509-a1d5-5cc7-be31-e3b08f9c16f3",
+              "document_id": "setup-repair",
+              "heading_path": [
+                "Setup Repair Strategies and Preconditions",
+                "Pipeline only with an accepted latency contract"
+              ],
+              "body_spans": [
+                [
+                  17,
+                  17
+                ]
+              ],
+              "score": 0.031754032258064516
+            },
+            {
+              "chunk_id": "fc74cfe7-2126-5d8b-bad7-376d61090b3f",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Resource cost and setup versus hold interaction"
+              ],
+              "body_spans": [
+                [
+                  32,
+                  34
+                ]
+              ],
+              "score": 0.031754032258064516
+            },
+            {
+              "chunk_id": "f613d278-be49-5d4e-83a5-1f30daefb38d",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Deep logic and unbalanced combinational stages"
+              ],
+              "body_spans": [
+                [
+                  17,
+                  17
+                ]
+              ],
+              "score": 0.03057889822595705
+            },
+            {
+              "chunk_id": "dae7c739-ded4-5f0f-8cc3-4a65df56d9a0",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "Register insertion needs a sequential behavior review"
+              ],
+              "body_spans": [
+                [
+                  33,
+                  33
+                ]
+              ],
+              "score": 0.030536130536130537
+            }
+          ]
+        },
+        {
+          "id": "acceptance-10",
+          "topic": "setup",
+          "query": "A revised RTL design synthesizes successfully and simulates correctly. What implementation evidence is still needed for timing signoff?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "215d0091-a056-50b5-aa18-5a3370533d75",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Signoff uses implemented timing evidence"
+              ],
+              "body_spans": [
+                [
+                  40,
+                  40
+                ]
+              ],
+              "score": 0.03278688524590164
+            },
+            {
+              "chunk_id": "b5bd5ca6-dbda-5145-8a7e-44dded080746",
+              "document_id": "timing-fundamentals",
+              "heading_path": [
+                "Timing Fundamentals for Setup and Hold",
+                "STA evidence includes more than RTL"
+              ],
+              "body_spans": [
+                [
+                  47,
+                  47
+                ]
+              ],
+              "score": 0.03225806451612903
+            },
+            {
+              "chunk_id": "99a71dd9-e407-5dc1-8473-807a5f3d01d4",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Dedicated block and inference bottlenecks"
+              ],
+              "body_spans": [
+                [
+                  21,
+                  21
+                ]
+              ],
+              "score": 0.031024531024531024
+            },
+            {
+              "chunk_id": "e11e5379-c6d7-5411-8a5c-402f990f4bd8",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Reproduce an ASIC timing comparison"
+              ],
+              "body_spans": [
+                [
+                  44,
+                  44
+                ]
+              ],
+              "score": 0.030330882352941176
+            },
+            {
+              "chunk_id": "fc74cfe7-2126-5d8b-bad7-376d61090b3f",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Resource cost and setup versus hold interaction"
+              ],
+              "body_spans": [
+                [
+                  32,
+                  34
+                ]
+              ],
+              "score": 0.030117753623188408
+            }
+          ]
+        },
+        {
+          "id": "acceptance-11",
+          "topic": "hold",
+          "query": "A direct connection between two registers has excellent setup slack but negative minimum slack. How can so little logic be a problem?",
+          "hit": true,
+          "first_relevant_rank": 2,
+          "results": [
+            {
+              "chunk_id": "5b6a8278-df3e-537c-8061-f4982f86e50f",
+              "document_id": "timing-fundamentals",
+              "heading_path": [
+                "Timing Fundamentals for Setup and Hold",
+                "Setup checks limit late data"
+              ],
+              "body_spans": [
+                [
+                  17,
+                  17
+                ]
+              ],
+              "score": 0.031544957774465976
+            },
+            {
+              "chunk_id": "d3573e22-bfa5-526c-b5c2-4b081c3578d2",
+              "document_id": "hold-diagnosis",
+              "heading_path": [
+                "Diagnosing Hold Timing Violations",
+                "Short paths and earliest arrival"
+              ],
+              "body_spans": [
+                [
+                  18,
+                  18
+                ]
+              ],
+              "score": 0.031099324975891997
+            },
+            {
+              "chunk_id": "bce38fb1-a231-51e1-afdc-6db147a8a65d",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Setup regression after routing"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 0.030798389007344232
+            },
+            {
+              "chunk_id": "dae7c739-ded4-5f0f-8cc3-4a65df56d9a0",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "Register insertion needs a sequential behavior review"
+              ],
+              "body_spans": [
+                [
+                  33,
+                  33
+                ]
+              ],
+              "score": 0.029857397504456328
+            },
+            {
+              "chunk_id": "f613d278-be49-5d4e-83a5-1f30daefb38d",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Deep logic and unbalanced combinational stages"
+              ],
+              "body_spans": [
+                [
+                  17,
+                  17
+                ]
+              ],
+              "score": 0.029709507042253523
+            }
+          ]
+        },
+        {
+          "id": "acceptance-12",
+          "topic": "hold",
+          "query": "The receiving register clock arrives substantially later than the launching clock. Why does that hurt a same-edge hold check?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "55e2ea67-6862-52ab-b380-9ab9a34bdeb7",
+              "document_id": "hold-diagnosis",
+              "heading_path": [
+                "Diagnosing Hold Timing Violations",
+                "Late capture clock and excessive skew"
+              ],
+              "body_spans": [
+                [
+                  22,
+                  22
+                ]
+              ],
+              "score": 0.03252247488101534
+            },
+            {
+              "chunk_id": "fe3e5cae-f2e6-5aff-95fc-7b7a2178be85",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "Why lowering frequency usually does not fix same-edge hold"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 0.03252247488101534
+            },
+            {
+              "chunk_id": "5b6a8278-df3e-537c-8061-f4982f86e50f",
+              "document_id": "timing-fundamentals",
+              "heading_path": [
+                "Timing Fundamentals for Setup and Hold",
+                "Setup checks limit late data"
+              ],
+              "body_spans": [
+                [
+                  17,
+                  17
+                ]
+              ],
+              "score": 0.03125763125763126
+            },
+            {
+              "chunk_id": "a4315b6d-19b9-5eaf-b593-c1f6fdf0a54b",
+              "document_id": "timing-fundamentals",
+              "heading_path": [
+                "Timing Fundamentals for Setup and Hold",
+                "Hold checks limit early data"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 0.031009615384615385
+            },
+            {
+              "chunk_id": "266cf168-5d8e-572d-8f58-833c7a3ffcce",
+              "document_id": "hold-diagnosis",
+              "heading_path": [
+                "Diagnosing Hold Timing Violations",
+                "Input interface and board timing assumptions"
+              ],
+              "body_spans": [
+                [
+                  34,
+                  36
+                ]
+              ],
+              "score": 0.030303030303030304
+            }
+          ]
+        },
+        {
+          "id": "acceptance-13",
+          "topic": "hold",
+          "query": "After adding a setup multicycle constraint, the minimum-delay requirement became unexpectedly large. What should be reviewed first?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "6c0673e6-190e-5b25-b8a1-0853a21a7cd4",
+              "document_id": "hold-diagnosis",
+              "heading_path": [
+                "Diagnosing Hold Timing Violations",
+                "Unexpected hold requirement after a multicycle exception"
+              ],
+              "body_spans": [
+                [
+                  26,
+                  26
+                ]
+              ],
+              "score": 0.03252247488101534
+            },
+            {
+              "chunk_id": "bce38fb1-a231-51e1-afdc-6db147a8a65d",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Setup regression after routing"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 0.0315136476426799
+            },
+            {
+              "chunk_id": "fc74cfe7-2126-5d8b-bad7-376d61090b3f",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Resource cost and setup versus hold interaction"
+              ],
+              "body_spans": [
+                [
+                  32,
+                  34
+                ]
+              ],
+              "score": 0.03149801587301587
+            },
+            {
+              "chunk_id": "1f85d774-ae2b-5fd0-9ae8-d12a45ce4922",
+              "document_id": "setup-repair",
+              "heading_path": [
+                "Setup Repair Strategies and Preconditions",
+                "Multicycle constraints require real functional intent"
+              ],
+              "body_spans": [
+                [
+                  33,
+                  33
+                ]
+              ],
+              "score": 0.03131881575727918
+            },
+            {
+              "chunk_id": "9f19187d-168e-5629-bf6c-97122b3aea75",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "Correct an erroneous hold relationship"
+              ],
+              "body_spans": [
+                [
+                  25,
+                  25
+                ]
+              ],
+              "score": 0.029957522915269395
+            }
+          ]
+        },
+        {
+          "id": "acceptance-14",
+          "topic": "hold",
+          "query": "An FPGA input-to-register hold check fails. How do external chip and board arrival assumptions enter the investigation?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "266cf168-5d8e-572d-8f58-833c7a3ffcce",
+              "document_id": "hold-diagnosis",
+              "heading_path": [
+                "Diagnosing Hold Timing Violations",
+                "Input interface and board timing assumptions"
+              ],
+              "body_spans": [
+                [
+                  34,
+                  36
+                ]
+              ],
+              "score": 0.03278688524590164
+            },
+            {
+              "chunk_id": "c44db87d-bf20-514f-b40a-91de3088d26c",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Resource cost and setup versus hold interaction"
+              ],
+              "body_spans": [
+                [
+                  26,
+                  28
+                ]
+              ],
+              "score": 0.03057889822595705
+            },
+            {
+              "chunk_id": "a4315b6d-19b9-5eaf-b593-c1f6fdf0a54b",
+              "document_id": "timing-fundamentals",
+              "heading_path": [
+                "Timing Fundamentals for Setup and Hold",
+                "Hold checks limit early data"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 0.030536130536130537
+            },
+            {
+              "chunk_id": "dae7c739-ded4-5f0f-8cc3-4a65df56d9a0",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "Register insertion needs a sequential behavior review"
+              ],
+              "body_spans": [
+                [
+                  33,
+                  33
+                ]
+              ],
+              "score": 0.030330882352941176
+            },
+            {
+              "chunk_id": "bce38fb1-a231-51e1-afdc-6db147a8a65d",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Setup regression after routing"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 0.03021353930031804
+            }
+          ]
+        },
+        {
+          "id": "acceptance-15",
+          "topic": "hold",
+          "query": "How should I investigate the user margin and calculated variation appearing in a Vivado hold report?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "b8cf1ca8-e101-5eb7-84cb-9ec8f4bdf96e",
+              "document_id": "hold-diagnosis",
+              "heading_path": [
+                "Diagnosing Hold Timing Violations",
+                "Uncertainty in the actual hold report"
+              ],
+              "body_spans": [
+                [
+                  30,
+                  30
+                ]
+              ],
+              "score": 0.03278688524590164
+            },
+            {
+              "chunk_id": "d3573e22-bfa5-526c-b5c2-4b081c3578d2",
+              "document_id": "hold-diagnosis",
+              "heading_path": [
+                "Diagnosing Hold Timing Violations",
+                "Short paths and earliest arrival"
+              ],
+              "body_spans": [
+                [
+                  18,
+                  18
+                ]
+              ],
+              "score": 0.031024531024531024
+            },
+            {
+              "chunk_id": "266cf168-5d8e-572d-8f58-833c7a3ffcce",
+              "document_id": "hold-diagnosis",
+              "heading_path": [
+                "Diagnosing Hold Timing Violations",
+                "Input interface and board timing assumptions"
+              ],
+              "body_spans": [
+                [
+                  34,
+                  36
+                ]
+              ],
+              "score": 0.0304147465437788
+            },
+            {
+              "chunk_id": "bce38fb1-a231-51e1-afdc-6db147a8a65d",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Setup regression after routing"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 0.0304147465437788
+            },
+            {
+              "chunk_id": "55e2ea67-6862-52ab-b380-9ab9a34bdeb7",
+              "document_id": "hold-diagnosis",
+              "heading_path": [
+                "Diagnosing Hold Timing Violations",
+                "Late capture clock and excessive skew"
+              ],
+              "body_spans": [
+                [
+                  22,
+                  22
+                ]
+              ],
+              "score": 0.029709507042253523
+            }
+          ]
+        },
+        {
+          "id": "acceptance-16",
+          "topic": "hold",
+          "query": "When should OpenROAD insert hold buffers, and how does it avoid breaking setup while doing so?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "363a90e8-9548-5c24-beb8-0df4351b665e",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "ASIC delay insertion after clock tree synthesis"
+              ],
+              "body_spans": [
+                [
+                  17,
+                  17
+                ]
+              ],
+              "score": 0.03278688524590164
+            },
+            {
+              "chunk_id": "a576aea9-1f7e-5d86-9f22-da499776dd77",
+              "document_id": "setup-repair",
+              "heading_path": [
+                "Setup Repair Strategies and Preconditions",
+                "ASIC cell and load optimization"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 0.03200204813108039
+            },
+            {
+              "chunk_id": "dae7c739-ded4-5f0f-8cc3-4a65df56d9a0",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "Register insertion needs a sequential behavior review"
+              ],
+              "body_spans": [
+                [
+                  33,
+                  33
+                ]
+              ],
+              "score": 0.030834914611005692
+            },
+            {
+              "chunk_id": "b5bd5ca6-dbda-5145-8a7e-44dded080746",
+              "document_id": "timing-fundamentals",
+              "heading_path": [
+                "Timing Fundamentals for Setup and Hold",
+                "STA evidence includes more than RTL"
+              ],
+              "body_spans": [
+                [
+                  47,
+                  47
+                ]
+              ],
+              "score": 0.030330882352941176
+            },
+            {
+              "chunk_id": "c44db87d-bf20-514f-b40a-91de3088d26c",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Resource cost and setup versus hold interaction"
+              ],
+              "body_spans": [
+                [
+                  26,
+                  28
+                ]
+              ],
+              "score": 0.029877369007803793
+            }
+          ]
+        },
+        {
+          "id": "acceptance-17",
+          "topic": "hold",
+          "query": "What Vivado physical optimization options add LUT1 delay to severe hold paths before routing?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "5aad3a06-3b01-508e-bad4-db6cd17acb2a",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "FPGA physical hold optimization"
+              ],
+              "body_spans": [
+                [
+                  21,
+                  21
+                ]
+              ],
+              "score": 0.03278688524590164
+            },
+            {
+              "chunk_id": "dae7c739-ded4-5f0f-8cc3-4a65df56d9a0",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "Register insertion needs a sequential behavior review"
+              ],
+              "body_spans": [
+                [
+                  33,
+                  33
+                ]
+              ],
+              "score": 0.0315136476426799
+            },
+            {
+              "chunk_id": "bce38fb1-a231-51e1-afdc-6db147a8a65d",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Setup regression after routing"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 0.029957522915269395
+            },
+            {
+              "chunk_id": "fd7b1a2f-30c1-53b6-a979-466f4e9505db",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Routing, fanout, and placement restrictions"
+              ],
+              "body_spans": [
+                [
+                  25,
+                  25
+                ]
+              ],
+              "score": 0.029910714285714284
+            },
+            {
+              "chunk_id": "b8cf1ca8-e101-5eb7-84cb-9ec8f4bdf96e",
+              "document_id": "hold-diagnosis",
+              "heading_path": [
+                "Diagnosing Hold Timing Violations",
+                "Uncertainty in the actual hold report"
+              ],
+              "body_spans": [
+                [
+                  30,
+                  30
+                ]
+              ],
+              "score": 0.029631255487269532
+            }
+          ]
+        },
+        {
+          "id": "acceptance-18",
+          "topic": "hold",
+          "query": "Will reducing the clock frequency repair an ordinary same-edge register hold failure?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "fe3e5cae-f2e6-5aff-95fc-7b7a2178be85",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "Why lowering frequency usually does not fix same-edge hold"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 0.03278688524590164
+            },
+            {
+              "chunk_id": "dae7c739-ded4-5f0f-8cc3-4a65df56d9a0",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "Register insertion needs a sequential behavior review"
+              ],
+              "body_spans": [
+                [
+                  33,
+                  33
+                ]
+              ],
+              "score": 0.03200204813108039
+            },
+            {
+              "chunk_id": "55e2ea67-6862-52ab-b380-9ab9a34bdeb7",
+              "document_id": "hold-diagnosis",
+              "heading_path": [
+                "Diagnosing Hold Timing Violations",
+                "Late capture clock and excessive skew"
+              ],
+              "body_spans": [
+                [
+                  22,
+                  22
+                ]
+              ],
+              "score": 0.03125763125763126
+            },
+            {
+              "chunk_id": "266cf168-5d8e-572d-8f58-833c7a3ffcce",
+              "document_id": "hold-diagnosis",
+              "heading_path": [
+                "Diagnosing Hold Timing Violations",
+                "Input interface and board timing assumptions"
+              ],
+              "body_spans": [
+                [
+                  34,
+                  36
+                ]
+              ],
+              "score": 0.03125
+            },
+            {
+              "chunk_id": "5aad3a06-3b01-508e-bad4-db6cd17acb2a",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "FPGA physical hold optimization"
+              ],
+              "body_spans": [
+                [
+                  21,
+                  21
+                ]
+              ],
+              "score": 0.029411764705882353
+            }
+          ]
+        },
+        {
+          "id": "acceptance-19",
+          "topic": "hold",
+          "query": "Why is adding an ordinary pipeline register not automatically a safe replacement for a hold buffer?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "dae7c739-ded4-5f0f-8cc3-4a65df56d9a0",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "Register insertion needs a sequential behavior review"
+              ],
+              "body_spans": [
+                [
+                  33,
+                  33
+                ]
+              ],
+              "score": 0.03278688524590164
+            },
+            {
+              "chunk_id": "c44db87d-bf20-514f-b40a-91de3088d26c",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Resource cost and setup versus hold interaction"
+              ],
+              "body_spans": [
+                [
+                  26,
+                  28
+                ]
+              ],
+              "score": 0.03149801587301587
+            },
+            {
+              "chunk_id": "fe3e5cae-f2e6-5aff-95fc-7b7a2178be85",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "Why lowering frequency usually does not fix same-edge hold"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 0.03128054740957967
+            },
+            {
+              "chunk_id": "363a90e8-9548-5c24-beb8-0df4351b665e",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "ASIC delay insertion after clock tree synthesis"
+              ],
+              "body_spans": [
+                [
+                  17,
+                  17
+                ]
+              ],
+              "score": 0.03021353930031804
+            },
+            {
+              "chunk_id": "2bd92509-a1d5-5cc7-be31-e3b08f9c16f3",
+              "document_id": "setup-repair",
+              "heading_path": [
+                "Setup Repair Strategies and Preconditions",
+                "Pipeline only with an accepted latency contract"
+              ],
+              "body_spans": [
+                [
+                  17,
+                  17
+                ]
+              ],
+              "score": 0.029386529386529386
+            }
+          ]
+        },
+        {
+          "id": "acceptance-20",
+          "topic": "hold",
+          "query": "A hold fix passes at the fast corner. Is that enough, or should maximum and minimum timing be checked elsewhere too?",
+          "hit": true,
+          "first_relevant_rank": 1,
+          "results": [
+            {
+              "chunk_id": "2aeaca18-9687-551b-9b35-5263b9baec89",
+              "document_id": "repair-tradeoffs-and-validation",
+              "heading_path": [
+                "Timing Repair Tradeoffs and Validation",
+                "Recheck both delay directions and all required corners"
+              ],
+              "body_spans": [
+                [
+                  18,
+                  18
+                ]
+              ],
+              "score": 0.03278688524590164
+            },
+            {
+              "chunk_id": "a4315b6d-19b9-5eaf-b593-c1f6fdf0a54b",
+              "document_id": "timing-fundamentals",
+              "heading_path": [
+                "Timing Fundamentals for Setup and Hold",
+                "Hold checks limit early data"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 0.031754032258064516
+            },
+            {
+              "chunk_id": "d3573e22-bfa5-526c-b5c2-4b081c3578d2",
+              "document_id": "hold-diagnosis",
+              "heading_path": [
+                "Diagnosing Hold Timing Violations",
+                "Short paths and earliest arrival"
+              ],
+              "body_spans": [
+                [
+                  18,
+                  18
+                ]
+              ],
+              "score": 0.03125763125763126
+            },
+            {
+              "chunk_id": "fe3e5cae-f2e6-5aff-95fc-7b7a2178be85",
+              "document_id": "hold-repair",
+              "heading_path": [
+                "Hold Repair Strategies and Preconditions",
+                "Why lowering frequency usually does not fix same-edge hold"
+              ],
+              "body_spans": [
+                [
+                  29,
+                  29
+                ]
+              ],
+              "score": 0.031009615384615385
+            },
+            {
+              "chunk_id": "65e352fa-2693-5793-add6-6b6e1f3f223e",
+              "document_id": "setup-diagnosis",
+              "heading_path": [
+                "Diagnosing Setup Timing Violations",
+                "Maximum-delay analysis context"
+              ],
+              "body_spans": [
+                [
+                  33,
+                  33
+                ]
+              ],
+              "score": 0.03021353930031804
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "acceptance_passed": true
+}

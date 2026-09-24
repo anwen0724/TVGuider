@@ -1,6 +1,6 @@
 # RAG 知识库构建与独立检索 Implementation Plan
 
-状态：计划已编写，尚未执行。
+状态：T00～T10 已执行，功能与检索效果验收通过。实际结果见 [验收记录](C:/Users/anwen/Desktop/tv-guider/docs/notes/rag-validation.md)。下文保留实施安排，完成事实以验收记录为准。
 
 日期：2026-09-24。
 
@@ -80,7 +80,7 @@ docs/notes/rag-validation.md           最终执行、效果与未验证边界�
 
 用户指定模型存放根目录为 `C:/all/tools/llm/models`，该目录已存在。本模型使用其下的 `Qwen3-Embedding-0.6B/` 子目录保存完整的权重、tokenizer 和模型配置。后续在 `configs/rag.yaml` 中记录 `model_path: C:/all/tools/llm/models/Qwen3-Embedding-0.6B`，同时保留来源标识 `Qwen/Qwen3-Embedding-0.6B` 与实际固定 revision；构建记录保存这些信息，检索加载对应的本地模型。该路径属于本机部署配置，换机器时可以调整路径，但不能悄悄更换模型版本。
 
-模型下载属于 T03 的环境准备步骤；正常构建与检索显式从该目录加载，不依赖默认 Hugging Face 缓存位置，也不在运行时自动下载其他版本。目录中缺少必要文件时报告模型加载错误。当前只记录位置，尚未下载模型或创建该模型子目录。
+模型下载属于 T03 的环境准备步骤；正常构建与检索显式从该目录加载，不依赖默认 Hugging Face 缓存位置，也不在运行时自动下载其他版本。目录中缺少必要文件时报告模型加载错误。执行阶段已下载固定 revision，并由 `scripts/provision_model.py` 生成文件指纹记录，详见环境记录。
 
 目标模块是任务定位，不要求一次性生成全部空文件。某个行为首次需要对应模块时再创建；避免为未来能力预建框架。`contracts.py` 使用 Python 类型与 dataclass 和显式边界校验，不为满足模板单独引入运行时 schema 框架。
 
