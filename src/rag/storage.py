@@ -8,6 +8,7 @@ import shutil
 from contextlib import closing
 from dataclasses import asdict
 from hashlib import sha256
+from importlib.metadata import version
 from pathlib import Path
 from uuid import uuid4
 
@@ -90,6 +91,11 @@ def _save_generation(kb, build_id, documents, chunks, vectors, config, descripto
     )
     manifest = {
         "format_version": 1,
+        "pipeline_version": "rag-v1",
+        "runtime": {
+            name: version(name)
+            for name in ("qdrant-client", "rank-bm25", "markdown-it-py", "pysbd", "PyYAML")
+        },
         "build_id": build_id,
         "config": asdict(config),
         "embedding": descriptor,
@@ -155,6 +161,9 @@ def validate_generation(generation):
     if manifest["format_version"] != 1 or manifest["build_id"] != generation.name:
         raise ConsistencyError("Incompatible format or generation identity")
     BuildConfig(**manifest["config"])
+    for name in ("qdrant-client", "rank-bm25"):
+        if manifest["runtime"][name] != version(name):
+            raise ConsistencyError(f"{name} version changed; rebuild the knowledge base")
     for name in ("chunks.jsonl", "bm25.json"):
         if file_hash(generation / name) != manifest["hashes"][name]:
             raise ConsistencyError(f"{name}: fingerprint mismatch")

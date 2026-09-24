@@ -67,11 +67,53 @@ class QwenEmbedding:
 
     def encode_documents(self, texts):
         """Encode documents without the retrieval query instruction."""
-        raise NotImplementedError("Qwen document inference is not implemented")
+        return self._encode(texts, query=False)
 
     def encode_query(self, text):
         """Encode a query using the checkpoint's official retrieval instruction."""
-        raise NotImplementedError("Qwen query inference is not implemented")
+        return self._encode([text], query=True)[0]
+
+    def _encode(self, texts, *, query):
+        """Check actual prompted lengths before the library's truncation boundary."""
+        try:
+            limit = 32768 if query else self.config.max_tokens
+            for text in texts:
+                count = self.count_tokens((self.prompt if query else "") + text)
+                if count > limit:
+                    raise ModelError(f"Encoding requires {count} tokens; limit={limit}")
+            if self.model is None:
+                import torch
+                from sentence_transformers import SentenceTransformer
+
+                self.model = SentenceTransformer(
+                    self.config.model_path,
+                    device=self.config.device,
+                    local_files_only=True,
+                    trust_remote_code=False,
+                    model_kwargs={
+                        "dtype": getattr(torch, self.config.dtype),
+                        "attn_implementation": "sdpa",
+                    },
+                    tokenizer_kwargs={"padding_side": "left"},
+                )
+                self.model.max_seq_length = 32768
+            encoded = self.model.encode(
+                texts,
+                prompt=self.prompt if query else "",
+                batch_size=self.config.batch_size,
+                normalize_embeddings=True,
+                convert_to_numpy=True,
+                show_progress_bar=False,
+            )
+            return validate_vectors(encoded.tolist(), len(texts))
+        except ModelError:
+            raise
+        except Exception as exc:
+            raise ModelError(f"Local Qwen inference failed: {exc}") from exc
+
+    def close(self):
+        """Release this adapter's model; callers may reuse it until explicitly closed."""
+        self.model = None
 
 
 def validate_vectors(vectors, expected_count):

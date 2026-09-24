@@ -53,3 +53,33 @@ def test_failed_pointer_publication_preserves_old_and_cleans_partial(
     assert search_knowledge_base(kb, "setup", mode="bm25").build_id == old.build_id
     assert [p.name for p in (kb / "generations").iterdir()] == [old.build_id]
     assert list(kb.glob(".*.json")) == []
+
+
+def test_rebuild_removes_deleted_docs_and_recovers_only_marked_partial(
+    tmp_path, source, config, backend
+):
+    kb = tmp_path / "kb"
+    path = source / "setup.md"
+    copy = source / "other.md"
+    copy.write_text(
+        path.read_text(encoding="utf-8")
+        .replace("id: setup", "id: other")
+        .replace("combinational", "obsoleteword"),
+        encoding="utf-8",
+    )
+    old = build_knowledge_base(source, kb, config, backend=backend)
+    old_ids = {
+        h.chunk.chunk_id for h in search_knowledge_base(kb, "combinational", mode="bm25").results
+    }
+    abandoned = kb / "generations" / ("f" * 32)
+    abandoned.mkdir()
+    (abandoned / ".pending").write_text("interrupted", encoding="utf-8")
+    copy.unlink()
+    new = build_knowledge_base(source, kb, config, backend=backend)
+    assert new.build_id != old.build_id
+    assert search_knowledge_base(kb, "obsoleteword", mode="bm25").results == []
+    assert {
+        h.chunk.chunk_id for h in search_knowledge_base(kb, "combinational", mode="bm25").results
+    } == old_ids
+    assert not abandoned.exists()
+    assert (kb / "generations" / old.build_id).exists()

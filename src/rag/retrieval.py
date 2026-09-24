@@ -4,11 +4,18 @@ from contextlib import closing
 
 from qdrant_client import QdrantClient
 
+from .contracts import StorageError
+
 
 def rank_dense(generation, vector, count):
     """Retrieve all scores before stable sorting, including cutoff ties."""
-    with closing(QdrantClient(path=str(generation / "qdrant"))) as client:
-        points = client.query_points("chunks", query=vector, limit=count, with_payload=False).points
+    try:
+        with closing(QdrantClient(path=str(generation / "qdrant"))) as client:
+            points = client.query_points(
+                "chunks", query=vector, limit=count, with_payload=False
+            ).points
+    except Exception as exc:
+        raise StorageError(f"Vector retrieval failed: {exc}") from exc
     return sorted(
         [(str(point.id), float(point.score)) for point in points],
         key=lambda item: (-item[1], item[0]),

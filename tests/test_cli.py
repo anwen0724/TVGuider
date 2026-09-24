@@ -5,6 +5,8 @@ import subprocess
 import sys
 from dataclasses import asdict
 
+import pytest
+
 from rag import build_knowledge_base, search_knowledge_base
 
 
@@ -31,3 +33,24 @@ def test_bm25_cli_reloads_in_another_process_with_api_parity(tmp_path, source, c
     assert result.returncode == 0, result.stderr
     assert json.loads(result.stdout) == asdict(search_knowledge_base(kb, "setup", mode="bm25"))
     assert result.stderr == ""
+
+
+@pytest.mark.parametrize(
+    "arguments,category",
+    [
+        (["search", "--kb", "absent", "--query", " "], "InputError"),
+        (["search", "--kb", "absent", "--query", "setup"], "ConsistencyError"),
+        (
+            ["build", "--kb", "absent", "--source", "absent", "--config", "absent.yaml"],
+            "InputError",
+        ),
+    ],
+)
+def test_cli_errors_have_nonzero_status_and_no_success_json(arguments, category):
+    result = subprocess.run(
+        [sys.executable, "-m", "rag", *arguments], capture_output=True, text=True, check=False
+    )
+    assert result.returncode != 0
+    assert result.stdout == ""
+    assert category in result.stderr
+    assert "Traceback" not in result.stderr

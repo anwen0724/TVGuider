@@ -47,3 +47,56 @@ def test_short_paragraphs_pack_and_long_prose_overlaps_whole_sentences(
     assert any("Alpha" in c.text and "Gamma" in c.text for c in chunks)
     assert any(c.text.startswith("Gamma delay matters.") and "Delta" in c.text for c in chunks)
     assert all(c.token_count <= 16 for c in chunks)
+
+
+def test_english_abbreviation_and_decimal_stay_in_their_sentence(tmp_path, source, config, backend):
+    path = source / "setup.md"
+    front = path.read_text(encoding="utf-8").split("# Diagnosis")[0]
+    first = "Dr. Smith measured 0.25 ns."
+    path.write_text(
+        front + "# Diagnosis\n\n" + first + " The path is slow. The clock is fast.\n",
+        encoding="utf-8",
+    )
+    kb = tmp_path / "kb"
+    build_knowledge_base(
+        source, kb, replace(config, max_tokens=15, overlap_tokens=0), backend=backend
+    )
+    hits = search_knowledge_base(kb, "timing", mode="bm25", top_k=100).results
+    assert sum(first in hit.chunk.text for hit in hits) == 1
+    assert all(hit.chunk.token_count <= 15 for hit in hits)
+
+
+def test_unbroken_text_uses_character_fallback_without_loss(tmp_path, source, config, backend):
+    path = source / "setup.md"
+    front = path.read_text(encoding="utf-8").split("# Diagnosis")[0]
+    text = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+    path.write_text(front + "# Diagnosis\n\n" + text + "\n", encoding="utf-8")
+    backend.count_tokens = len
+    kb = tmp_path / "kb"
+    build_knowledge_base(
+        source, kb, replace(config, max_tokens=32, overlap_tokens=0), backend=backend
+    )
+    chunks = [
+        hit.chunk for hit in search_knowledge_base(kb, "timing", mode="bm25", top_k=100).results
+    ]
+    assert len(chunks) > 1
+    assert sorted("".join(c.text for c in chunks)) == sorted(text)
+    assert all(c.token_count <= 32 for c in chunks)
+
+
+def test_overlap_never_repeats_a_fragment_of_an_oversized_sentence(
+    tmp_path, source, config, backend
+):
+    path = source / "setup.md"
+    front = path.read_text(encoding="utf-8").split("# Diagnosis")[0]
+    words = [f"word{i}" for i in range(25)]
+    path.write_text(
+        front + "# Diagnosis\n\nAlpha delay matters. " + " ".join(words) + ".\n", encoding="utf-8"
+    )
+    kb = tmp_path / "kb"
+    build_knowledge_base(
+        source, kb, replace(config, max_tokens=14, overlap_tokens=8), backend=backend
+    )
+    chunks = [h.chunk for h in search_knowledge_base(kb, "timing", mode="bm25", top_k=100).results]
+    for word in words:
+        assert sum(word in c.text.replace(".", "").split() for c in chunks) == 1

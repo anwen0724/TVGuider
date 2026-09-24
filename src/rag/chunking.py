@@ -38,6 +38,7 @@ def _pieces(text, start, fits, level=0):
 def _prose_parts(text, fits, backend, overlap_tokens):
     """Greedily pack recursive units, retaining exact source character offsets."""
     units = _pieces(text, 0, fits)
+    sentences = _sentences.segment(text) if overlap_tokens else []
     start, end = units[0]
     parts = []
     for a, b in units[1:]:
@@ -46,9 +47,14 @@ def _prose_parts(text, fits, backend, overlap_tokens):
         else:
             parts.append((start, end))
             overlap_start = a
-            if overlap_tokens:
-                for sentence in _sentences.segment(text[start:end]):
-                    candidate = start + sentence.start
+            complete_end = any(
+                start <= s.start < s.end <= end and not text[s.end : end].strip() for s in sentences
+            )
+            if overlap_tokens and complete_end:
+                for sentence in sentences:
+                    candidate = sentence.start
+                    if candidate < start or sentence.end > end:
+                        continue
                     suffix = text[candidate:end].strip()
                     if (
                         suffix

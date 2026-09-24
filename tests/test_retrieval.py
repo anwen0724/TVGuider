@@ -3,7 +3,7 @@
 import pytest
 
 from rag import build_knowledge_base, search_knowledge_base
-from rag.contracts import InputError
+from rag.contracts import InputError, StorageError
 
 
 def test_bm25_identifier_matching_no_stemming_and_stable_ties(tmp_path, source, config, backend):
@@ -67,3 +67,19 @@ def test_dense_and_hybrid_use_vectors_rrf_and_missing_lexical_route(
     assert fused.results[0].chunk.heading_path == ["Hold"]
     first = fused.results[0]
     assert first.score == pytest.approx(1 / (60 + first.dense_rank) + 1 / 61)
+
+
+def test_vector_storage_query_failure_is_reported_not_downgraded(
+    tmp_path, source, config, backend, monkeypatch
+):
+    from qdrant_client import QdrantClient
+
+    kb = tmp_path / "kb"
+    build_knowledge_base(source, kb, config, backend=backend)
+
+    def fail(*args, **kwargs):
+        raise RuntimeError("vector search unavailable")
+
+    monkeypatch.setattr(QdrantClient, "query_points", fail)
+    with pytest.raises(StorageError, match="vector search unavailable"):
+        search_knowledge_base(kb, "setup", backend=backend)

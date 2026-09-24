@@ -1,5 +1,6 @@
 """Read source Markdown with original positions, without rewriting documents."""
 
+import re
 from dataclasses import dataclass
 from hashlib import sha256
 from pathlib import Path
@@ -58,6 +59,41 @@ class Document:
     blocks: list[Block]
 
 
+def _source_blocks(tokens, index, body, offset, headings, section):
+    """Expose nested protected units before a list/quote can be split as prose."""
+    token = tokens[index]
+    start, end = token.map
+    kinds = {"fence": "code", "code_block": "code", "table_open": "table"}
+    protected = [
+        t
+        for t in tokens[index:]
+        if t.map and start <= t.map[0] < t.map[1] <= end and t.type in kinds
+    ]
+    cursor = start
+    result = []
+
+    def append(kind, a, b, language=None):
+        text = "".join(body[a:b]).rstrip("\r\n")
+        if not text.strip():
+            return
+        # Quote markers are Markdown container syntax, not part of the RTL/table.
+        if kind in {"code", "table"} and text.lstrip().startswith(">"):
+            text = "\n".join(re.sub(r"^\s*> ?", "", line) for line in text.splitlines())
+        result.append(
+            Block(kind, text, list(headings), offset + a + 1, offset + b, language, section)
+        )
+
+    for child in protected:
+        a, b = child.map
+        if a < cursor:
+            continue
+        append("prose", cursor, a)
+        append(kinds[child.type], a, b, child.info.strip() or None)
+        cursor = b
+    append("prose", cursor, end)
+    return result
+
+
 def load_documents(source_dir):
     """Load Markdown recursively, retaining one-based inclusive source lines."""
     root = Path(source_dir)
@@ -87,26 +123,14 @@ def load_documents(source_dir):
         blocks = []
         section = 0
         for i, token in enumerate(tokens):
-            if token.type == "heading_open":
+            if token.type == "heading_open" and token.level == 0:
                 section += 1
                 level = int(token.tag[1:])
                 headings = [(n, text) for n, text in headings if n < level]
                 headings.append((level, tokens[i + 1].content))
             elif token.map and token.level == 0 and token.type != "heading_close":
-                start, end = token.map
-                kind = {"fence": "code", "code_block": "code", "table_open": "table"}.get(
-                    token.type, "prose"
-                )
-                blocks.append(
-                    Block(
-                        kind,
-                        "".join(body[start:end]).strip(),
-                        [text for _, text in headings],
-                        offset + start + 1,
-                        offset + end,
-                        token.info.strip() or None,
-                        section,
-                    )
+                blocks.extend(
+                    _source_blocks(tokens, i, body, offset, [text for _, text in headings], section)
                 )
         if not blocks or not any(b.text.strip() for b in blocks):
             raise InputError(f"{path}: no body content")

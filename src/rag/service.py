@@ -1,6 +1,7 @@
 """Application boundary for building and searching a local knowledge base."""
 
 import math
+from contextlib import contextmanager
 
 from .chunking import chunk_documents
 from .contracts import BuildConfig, BuildReport, InputError, ModelError, SearchHit, SearchResponse
@@ -11,13 +12,25 @@ from .retrieval import fuse, rank_dense
 from .storage import load_generation, save_generation
 
 
+@contextmanager
+def _encoder(config, backend):
+    """Own model lifetime only when the caller did not supply the adapter."""
+    owned = backend is None
+    adapter = QwenEmbedding(config) if owned else backend
+    try:
+        yield adapter
+    finally:
+        if owned:
+            adapter.close()
+
+
 def build_knowledge_base(source_dir, kb_dir, config, *, backend=None):
     """Build and publish a complete generation, preserving any previous one."""
     documents = load_documents(source_dir)
-    backend = backend or QwenEmbedding(config)
-    chunks = chunk_documents(documents, config, backend)
-    vectors = encode_checked(backend, [c.encoding_text for c in chunks])
-    manifest = save_generation(kb_dir, documents, chunks, vectors, config, backend.describe())
+    with _encoder(config, backend) as adapter:
+        chunks = chunk_documents(documents, config, adapter)
+        vectors = encode_checked(adapter, [c.encoding_text for c in chunks])
+        manifest = save_generation(kb_dir, documents, chunks, vectors, config, adapter.describe())
     return BuildReport(manifest["build_id"], len(documents), len(chunks), manifest["config"])
 
 
@@ -27,7 +40,7 @@ def search_knowledge_base(
     """Retrieve traceable chunks from the current complete generation."""
     if not isinstance(query, str) or not query.strip():
         raise InputError("query must be a nonempty string")
-    if mode not in {"dense", "bm25", "hybrid"}:
+    if not isinstance(mode, str) or mode not in {"dense", "bm25", "hybrid"}:
         raise InputError("mode must be dense, bm25 or hybrid")
     if type(top_k) is not int or top_k <= 0:
         raise InputError("top_k must be a positive integer")
@@ -38,17 +51,18 @@ def search_knowledge_base(
         raise InputError("rrf_k must be a finite positive number")
     query = query.strip()
     generation, manifest, chunks, lexical = load_generation(kb_dir)
-    if mode != "bm25":
-        backend = backend or QwenEmbedding(BuildConfig(**manifest["config"]))
-    if mode != "bm25" and backend.describe() != manifest["embedding"]:
-        raise ModelError("Encoder configuration/revision differs from the built vector space")
     by_id = {c.chunk_id: c for c in chunks}
     bm25 = rank_bm25(lexical, query) if mode != "dense" else []
-    dense = (
-        rank_dense(generation, encode_checked(backend, [query], query=True)[0], len(chunks))
-        if mode != "bm25"
-        else []
-    )
+    dense = []
+    if mode != "bm25":
+        with _encoder(BuildConfig(**manifest["config"]), backend) as adapter:
+            if adapter.describe() != manifest["embedding"]:
+                raise ModelError(
+                    "Encoder configuration/revision differs from the built vector space"
+                )
+            dense = rank_dense(
+                generation, encode_checked(adapter, [query], query=True)[0], len(chunks)
+            )
     if mode == "hybrid":
         ranked = fuse(dense[:candidate_k], bm25[:candidate_k], rrf_k)
     else:

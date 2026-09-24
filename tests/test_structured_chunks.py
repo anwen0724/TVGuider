@@ -54,3 +54,32 @@ def test_oversized_protected_row_fails_and_keeps_old_generation(tmp_path, source
             source, kb, replace(config, max_tokens=40, overlap_tokens=0), backend=backend
         )
     assert search_knowledge_base(kb, "setup", mode="bm25").build_id == report.build_id
+
+
+def test_indented_code_keeps_original_indentation(tmp_path, source, config, backend):
+    path = source / "setup.md"
+    with path.open("a", encoding="utf-8") as stream:
+        stream.write("\n    assign out = data;\n        // retained indentation\n")
+    kb = tmp_path / "kb"
+    build_knowledge_base(source, kb, config, backend=backend)
+    hit = search_knowledge_base(kb, "retained", mode="bm25").results[0]
+    assert "\n    assign out = data;\n        // retained indentation\n" in hit.chunk.text
+
+
+def test_code_nested_in_list_is_protected_from_prose_splitting(tmp_path, source, config, backend):
+    path = source / "setup.md"
+    with path.open("a", encoding="utf-8") as stream:
+        stream.write(
+            "\n- A nested RTL example:\n\n  ```verilog\n  "
+            + "\n  ".join(f"assign out_{i} = data_{i};" for i in range(12))
+            + "\n  ```\n"
+        )
+    kb = tmp_path / "kb"
+    build_knowledge_base(
+        source, kb, replace(config, max_tokens=37, overlap_tokens=0), backend=backend
+    )
+    hits = search_knowledge_base(kb, "assign", mode="bm25", top_k=100).results
+    assert len(hits) > 1
+    assert all(h.chunk.structure_id and h.chunk.language == "verilog" for h in hits)
+    for i in range(12):
+        assert sum(f"assign out_{i} = data_{i};" in h.chunk.text for h in hits) == 1
