@@ -123,7 +123,7 @@ class RepairSuggestionGenerator:
             "final_root_cause": final_root,
             "root_cause_explanation": {
                 "text": explanation_text or "",
-                "note": "Narrative reference from Module2. Prefer structured evidence; do NOT invent unseen facts from this text.",
+                "note": "Root-cause explanation for reference. Prefer structured evidence; do NOT invent unseen facts from this text.",
             },
             "tvir": {
                 "context": tvir_compact.get("context") or {},
